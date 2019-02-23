@@ -24,9 +24,10 @@ Globals:
       Role: !Ref CodeDeployRole
 
 Resources:
-  GetHelloWorld:
+  ECSendSMSNotification:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: ./functions/ECSendSMSNotification
       Handler: main
       Runtime: go1.x
       Role:
@@ -37,8 +38,8 @@ Resources:
         GetEvent:
           Type: Api
           Properties:
-            Path: /
-            Method: get
+            Path: /sos/sms
+            Method: post
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role

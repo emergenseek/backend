@@ -15,6 +15,9 @@ phases:
       # Install Testify to use common assertions and mocks in tests
       - go get -u github.com/stretchr/testify
 
+      # Install Twilio SDK
+      - go get -u github.com/sfreiberg/gotwilio
+      
   pre_build:
     commands:
 
@@ -40,8 +43,6 @@ phases:
       - go build -o main
 
       # Copy static assets to S3, and package application with AWS CloudFormation/SAM
-      - aws s3 cp --recursive public/ s3://$WEBSITE_S3_BUCKET/public/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-      - sed -i -e "s|assets/|$WEBSITE_S3_PREFIX/public/assets/|g" public/index.html
       - aws cloudformation package --template template.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
 
   post_build:
