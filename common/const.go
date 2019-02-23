@@ -14,11 +14,11 @@ const (
 	Region = "us-east-2"
 
 	// SEVERE defines a priority 0 emergency
-	SEVERE EmergencyType = iota // 0
+	SEVERE EmergencyType = 1
 
 	// MILD defines a priority 1 emergency
-	MILD // 1
+	MILD EmergencyType = 2
 
 	// CHECKIN defines a priority 2 emergency (non-emergency)
-	CHECKIN //2
+	CHECKIN EmergencyType = 3
 )
