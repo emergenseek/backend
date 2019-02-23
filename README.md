@@ -13,11 +13,11 @@ Note: AWS CLI tools may require you to have [Python](https://www.python.org/down
         - Enable `Programmatic access` and take note of the `access key ID` and `secret access key`
         - If you would like to create keys and accounts for multiple users, repeat step 4 and provide each account with a `Console password`
         - Configure user permissions; select `Attach existing polices`
-      - For simplicity, give the new account the  `AWSLambdaDynamoDBExecutionRole` policy
-        - Additional policies may be added later on
+      - For simplicity, give the new account the `AdministratorAccess` policy
+        - Policies may be configured later on
 7. Download the AWS CLI
     - Reference: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
-    - In a terminal, run `aws` to verify that the tool installed successfully
+    - In a terminal, run `aws --version` to verify that the tool installed successfully
 8. Configure the AWS CLI:
     - Run `aws configure`
     - Paste the `Access Key ID` that was generated for your user
