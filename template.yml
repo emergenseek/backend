@@ -22,14 +22,16 @@ Globals:
       Enabled: true
       Type: Canary10Percent5Minutes
       Role: !Ref CodeDeployRole
+      Timeout: 5
 
 Resources:
   ECSendSMSNotification:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./functions/ECSendSMSNotification
+      CodeUri: functions/ECSendSMSNotification
       Handler: main
       Runtime: go1.x
+      Tracing: Active
       Role:
         Fn::GetAtt:
         - LambdaExecutionRole
@@ -38,7 +40,7 @@ Resources:
         GetEvent:
           Type: Api
           Properties:
-            Path: /sos/sms
+            Path: /sms
             Method: post
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
