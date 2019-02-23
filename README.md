@@ -1,65 +1,50 @@
-Welcome to the AWS CodeStar sample web application
-==================================================
+## EmergenSeek Backend
+Trello Board: https://trello.com/b/FgW72yJ5/emergenseek
 
-This sample code helps get you started with a simple Go web application deployed by AWS CloudFormation to AWS Lambda and Amazon API Gateway.
+## Setup
+1. Download, install, and setup Go 1.11+: http://howistart.org/posts/go/1/
+2. Install dep: https://github.com/golang/dep (Requires GOBIN environment variable)
+3. Within the `src` directory of `$GOPATH`, clone this repository using: `git clone https://github.com/emergenseek`
+4. Change directories into this repository (`cd backend`) and install dependencies: `dep ensure`
+5. Create an AWS account and enable billing
+6. Create a new IAM user:
+      - Configure the `Access type`
+        - Enable `Programmatic access` and take note of the `access key ID` and `secret access key`
+        - If you would like to create keys and accounts for multiple users, repeat step 4 and provide each account with a `Console password`
+        - Configure user permissions; select `Attach existing polices`
+      - To give the user access to Lambda, DynamoDB, and SNS, give the user the `AWSLambdaDynamoDBExecutionRole` policy
+        - Additional policies may be added later on
+7. Download the AWS CLI
+    - Reference: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
+    - In a terminal, run `aws` to verify that the tool installed successfully
+8. Configure the AWS CLI:
+    - Run `aws configure`
+    - Paste the `Access Key ID` that was generated for your user
+    - Paste the `Secret Access Key` that was generated for your user
+    - Set your default region name (recommended: `us-east-2`)
+    - Set the output format (recommended: `table`)
+9. Test that everything is working correctly:
+   - Coming soon
 
-What's Here
------------
+## Lambda Function Breakdown
+Below is a table detailing the function and purpose of each of the Lambda functions contained within this repository. Function packages are prefixed with ES (EmergenSeek) followed by their operation/responsibility.
 
-This sample includes:
+|Function Name          |Purpose                               |
+|-----------------------|--------------------------------------|
+|`ESCreateUser`         |Create a new EmergenSeek user         |
+|`ECSendSMSNotification`|Send SMS notifcation on S.O.S. trigger|
+|...                    |...                                   |
 
-* README.md - this file
-* buildspec.yml - this file is used by AWS CodeBuild to package your
-  application for deployment to AWS Lambda
-* main.go - this file contains the sample Go code for the web application
-* main_test.go - this file contains unit tests for the sample Go code
-* template.yml - this file contains the AWS Serverless Application Model (AWS SAM) used
-  by AWS CloudFormation to deploy your application to AWS Lambda and Amazon API
-  Gateway.
-* template-configuration.json - this file contains the project ARN with placeholders used for tagging resources with the project ID  
+## Project Structure
+  - `/common`
+    - Common helper functions which are shared by the Lambda functions in `/functions`
+  - `/functions`
+    - Contains Lambda functions that are automatically built, tested, and deployed using AWS CodeBuild, CodeDeploy, and CodePipeline
+  - `/hooks`
+    - [Git hooks](https://git-scm.com/docs/githooks) for ensureing `goreportcard` passes with a decent grade. Make sure to run `git config core.hooksPath githooks` to make sure Git can find these hooks. The default directory is `.git/hooks/`
+#### Helpful References
+ - https://stackoverflow.com/questions/48619686/project-structure-for-go-program-to-run-on-aws-lambda
+ - https://outcrawl.com/go-url-shortener-lambda
+ - https://artem.krylysov.com/blog/2018/01/18/porting-go-web-applications-to-aws-lambda/
+ - https://www.alexedwards.net/blog/serverless-api-with-go-and-aws-lambda
 
-
-What Do I Do Next?
-------------------
-
-If you have checked out a local copy of your repository you can start making
-changes to the sample code.  We suggest making a small change to main.go first,
-so you can see how changes pushed to your project's repository are automatically
-picked up by your project pipeline and deployed to AWS Lambda and Amazon API Gateway.
-(You can watch the pipeline progress on your AWS CodeStar project dashboard.)
-Once you've seen how that works, start developing your own code, and have fun!
-
-To run your test locally, go to the root directory of the sample code and
-run the `go test` command, which AWS CodeBuild also runs through your
-`buildspec.yml` file.
-
-To test your new code during the release process, modify the existing tests or
-add tests for any new packages you create. AWS CodeBuild will run the tests during
-the build stage of your project pipeline. You can find the test results in the
-AWS CodeBuild console.
-
-Learn more about AWS CodeBuild and how it builds and tests your application here:
-https://docs.aws.amazon.com/codebuild/latest/userguide/concepts.html
-
-Learn more about AWS Serverless Application Model (AWS SAM) and how it works here:
-https://github.com/awslabs/serverless-application-model/blob/master/HOWTO.md
-
-AWS Lambda Developer Guide:
-https://docs.aws.amazon.com/lambda/latest/dg/deploying-lambda-apps.html
-
-Learn more about AWS CodeStar by reading the user guide, and post questions and
-comments about AWS CodeStar on our forum.
-
-User Guide: http://docs.aws.amazon.com/codestar/latest/userguide/welcome.html
-
-Forum: https://forums.aws.amazon.com/forum.jspa?forumID=248
-
-What Should I Do Before Running My Project in Production?
-------------------
-
-AWS recommends you review the security best practices recommended by the framework
-author of your selected sample application before running it in production. You
-should also regularly review and apply any available patches or associated security
-advisories for dependencies used within your application.
-
-Best Practices: https://docs.aws.amazon.com/codestar/latest/userguide/best-practices.html?icmpid=docs_acs_rm_sec
