@@ -1,10 +1,10 @@
-package common
+package models
 
 // User encapsulates the data necessary to represent the data of a single EmergenSeek User
 type User struct {
 	FirstName         string     `json:"first_name"`
 	LastName          string     `json:"last_name"`
-	BloodType         string     `json:"last_name"`
+	BloodType         string     `json:"blood_type"`
 	Age               uint32     `json:"age"`
 	PrimaryContacts   *[]Contact `json:"primary_contacts"`
 	SecondaryContacts *[]Contact `json:"secondary_contacts"`

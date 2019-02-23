@@ -1,4 +1,4 @@
-package common
+package models
 
 // Contact defines the information of a User's contacts
 type Contact struct {

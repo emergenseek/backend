@@ -1,4 +1,4 @@
-package common
+package models
 
 // Address defines a user or contact object's place of residence
 type Address struct {
