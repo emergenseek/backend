@@ -13,12 +13,12 @@ const (
 	// Region defines the AWS VPC region used for development
 	Region = "us-east-2"
 
-	// SEVERE defines a priority 0 emergency
+	// SEVERE defines a priority 1 emergency
 	SEVERE EmergencyType = 1
 
-	// MILD defines a priority 1 emergency
+	// MILD defines a priority 2 emergency
 	MILD EmergencyType = 2
 
-	// CHECKIN defines a priority 2 emergency (non-emergency)
+	// CHECKIN defines a priority 3 emergency (non-emergency)
 	CHECKIN EmergencyType = 3
 )

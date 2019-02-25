@@ -39,7 +39,7 @@ func (t *TwilioHandler) GetCredentials(db *database.DynamoConn) error {
 
 	err = dynamodbattribute.UnmarshalMap(result.Item, &t)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	return nil
