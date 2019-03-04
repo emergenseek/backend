@@ -1,0 +1,47 @@
+{
+    "TableName": "EmergenSeekUsers",
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "first_name",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "last_name",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "blood_type",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "age",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "location",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "phone_number",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "email_address",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "cognito_id",
+            "AttributeType": "S"
+        }
+    ],
+    "KeySchema": [
+        {
+            "AttributeName": "cognito_id",
+            "KeyType": "HASH"
+        }
+    ],
+    "ProvisionedThroughput": {
+        "WriteCapacityUnits": 5,
+        "ReadCapacityUnits": 5
+    }
+}
