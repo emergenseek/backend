@@ -46,11 +46,12 @@ Successfully sent SMS to contacts of user: e78e0c86-f9ba-4375-9554-6dc1426f5605
 ## Lambda Function Breakdown
 Below is a table detailing the function and purpose of each of the Lambda functions contained within this repository. Function packages are prefixed with ES (EmergenSeek) followed by their operation/responsibility.
 
-|Function Name          |Purpose                               |
-|-----------------------|--------------------------------------|
-|`ESCreateUser`         |Create a new EmergenSeek user         |
-|`ESSendSMSNotification`|Send SMS notifcation on S.O.S. trigger|
-|...                    |...                                   |
+|Function Name             |Purpose                               |
+|--------------------------|--------------------------------------|
+|`ESCreateUser`            |Create a new EmergenSeek user         |
+|`ESSendSMSNotification`   |Send SMS notifcation on S.O.S. trigger|
+|`ESSendEmergencyVoiceCall`|Send a voice call on S.O.S. trigger   |
+|...                       |...                                   |
 
 ## Project Structure
   - `/common`
