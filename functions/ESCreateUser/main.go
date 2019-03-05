@@ -12,7 +12,10 @@ import (
 
 //CreateUserDB to create user data, then READ
 func CreateUserDB() {
-	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-east-2")})
+
+	config := &aws.Config{Region: aws.String("us-east-2")}
+
+	sess := session.Must(session.NewSession(config))
 
 	svc := dynamodb.New(sess)
 
