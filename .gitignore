@@ -14,4 +14,4 @@
 # Ignore binaries and dep vendor
 **main
 vendor/
-*.zip
+**.zip

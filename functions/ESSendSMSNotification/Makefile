@@ -1,7 +1,13 @@
 # Test the function locally using the SAM CLI tool
 sam:
-	# Build
-	#CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags '-w -extldflags "-static"' -o main *.go
+	# Building Go binary
+	GOOS=linux go build -o main
+
+	# Put the binary into a zip folder
+	${GOBIN}/build-lambda-zip.exe -o main.zip main
 
 	# Test
 	sam local start-api
+
+test:
+	curl -i -X POST http://127.0.0.1:3000/sms -d @event.json --header "Content-Type: application/json"

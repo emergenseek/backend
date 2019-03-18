@@ -15,8 +15,8 @@ type DynamoConn struct {
 	Region string
 }
 
-// Init initializes a DynamoDB session
-func (d *DynamoConn) Init() error {
+// Create creates a new, private DynamoDB session
+func (d *DynamoConn) Create() error {
 	// Assume client is may already be authorized
 	if d.Client != nil {
 		return nil

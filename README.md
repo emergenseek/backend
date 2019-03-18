@@ -1,5 +1,7 @@
+[![Go Report Card](https://goreportcard.com/badge/emergenseek/backend)](https://goreportcard.com/report/emergenseek/backend)
+
 ## EmergenSeek Backend
-Trello Board: https://trello.com/b/FgW72yJ5/emergenseek
+Trello Board: https://trello.com/b/O864ONXb/golang-backend
 
 ## Setup
 Note: AWS CLI tools may require you to have [Python](https://www.python.org/downloads/release/python-371/) installed
