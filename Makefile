@@ -13,3 +13,4 @@ install:
 
 fmt:
 	gofmt -s -w .
+	goreportcard-cli -v -t 90

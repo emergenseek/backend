@@ -1,5 +1,5 @@
 {
-    "message": "Hello from Annie",
     "user_id": "e78e0c86-f9ba-4375-9554-6dc1426f5605",
-    "type": 1
+    "type": 3,
+    "message": "Hello from Lambda, Simon"
 }

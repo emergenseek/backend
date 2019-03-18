@@ -20,7 +20,7 @@ Globals:
     AutoPublishAlias: live
     DeploymentPreference:
       Enabled: true
-      Type: Canary10Percent5Minutes
+      Type: AllAtOnce
       Role: !Ref CodeDeployRole
       Timeout: 5
 
@@ -41,7 +41,7 @@ Resources:
           Type: Api
           Properties:
             Path: /sms
-            Method: post
+            Method: POST
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
@@ -53,7 +53,7 @@ Resources:
           Principal:
             Service: [lambda.amazonaws.com]
           Action: sts:AssumeRole
-      Path: /
+      Path: /sms
       ManagedPolicyArns:
         -  arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       PermissionsBoundary: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary'

@@ -21,4 +21,27 @@ const (
 
 	// CHECKIN defines a priority 3 emergency (non-emergency)
 	CHECKIN EmergencyType = 3
+
+	// TwilioTrial defines the LambdaSecrets item ID of Twilio credentials for the trial account
+	TwilioTrial = "1"
+
+	// TwilioProduction defines the LambdaSecrets item ID of Twilio credentials for the paid account
+	TwilioProduction = "2"
 )
+
+// String converts an EmergencyType to its string name
+func (emergency EmergencyType) String() string {
+	// Map the emergency type string to an index
+	types := [...]string{
+		"SEVERE",
+		"MILD",
+		"CHECKIN",
+	}
+
+	// Check if the integer is between 1 and 3 inclusive
+	if emergency < SEVERE || emergency > CHECKIN {
+		return "Unknown"
+	}
+	// Return at types index - 1 because the enum begins at 1 not 0
+	return types[emergency-1]
+}

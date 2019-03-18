@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/emergenseek/backend/common"
 	"github.com/emergenseek/backend/common/database"
 	"github.com/sfreiberg/gotwilio"
 )
@@ -25,11 +26,12 @@ func (t *TwilioHandler) GetCredentials(db *database.DynamoConn) error {
 	}
 
 	result, err := db.Client.GetItem(&dynamodb.GetItemInput{
-		TableName: aws.String("LambdaSecrets"),
+		TableName: aws.String(common.LambdaSecretsTable),
 		Key: map[string]*dynamodb.AttributeValue{
 			"ID": {
-				// ID 1 is resevered for static Twilio Credentials
-				N: aws.String("1"),
+				// IDs 1 and 2 are resevered for static Twilio Credentials
+				// ID 2 is a non-trial account and should only be used in production
+				N: aws.String(common.TwilioProduction),
 			},
 		},
 	})
@@ -56,8 +58,8 @@ func (t *TwilioHandler) Authenticate() error {
 }
 
 // SendSMS provides EmergenSeek with SMS notification functionality
-func (t *TwilioHandler) SendSMS(message string) error {
-	_, _, err := t.Client.SendSMS(t.TwilioNumber, t.TargetNumber, message, "", "")
+func (t *TwilioHandler) SendSMS(phoneNumber string, message string) error {
+	_, _, err := t.Client.SendSMS(t.TwilioNumber, phoneNumber, message, "", "")
 	if err != nil {
 		return err
 	}
