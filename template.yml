@@ -25,7 +25,7 @@ Globals:
       Timeout: 5
 
 Resources:
-  ECSendSMSNotification:
+  ESSendSMSNotification:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: functions/ESSendSMSNotification

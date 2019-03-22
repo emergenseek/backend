@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -15,10 +14,6 @@ import (
 
 func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, []error) {
 	errs := []error{}
-	// Only allow JSON requests
-	if request.Headers["Content-Type"] != "application/json" {
-		return nil, http.StatusNotAcceptable, append(errs, errors.New("content-type must be application/json"))
-	}
 
 	// Create a new request object and unmarshal the request body into it
 	req := new(Request)
@@ -42,7 +37,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	// Verify the request
 	req, status, errs := verifyRequest(request)
 	if errs != nil {
-		return driver.ErrorResponse(status, errs...), nil
+		return driver.ErrorResponse(status, errs...), errs[0]
 	}
 
 	// Initialize drivers
@@ -52,7 +47,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	user, err := db.GetUser(req.UserID)
 
 	if err != nil {
-		return driver.ErrorResponse(http.StatusBadRequest, err), nil
+		return driver.ErrorResponse(http.StatusBadRequest, err), err
 	}
 
 	// Send an SMS to all of their contacts depending on the servity of the emergency
