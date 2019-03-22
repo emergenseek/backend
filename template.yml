@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform:
-- AWS::Serverless-2016-10-31
-- AWS::CodeStar
+  - AWS::Serverless-2016-10-31
+  - AWS::CodeStar
 
 Parameters:
   ProjectId:
@@ -13,7 +13,14 @@ Parameters:
   Stage:
     Type: String
     Description: The name for a project pipeline stage, such as Staging or Prod, for which resources are provisioned and deployed.
-    Default: ''
+    Default: ""
+
+Cors:
+  AllowHeaders: "'Content-Type'"
+  # For example, "'X-Forwarded-For'". Checkout [HTTP Spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers) for more details on the value
+
+  AllowOrigin: "'api.emergenseek.com'"
+  # For example, "'www.example.com'". Checkout [HTTP Spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) for more details on this value.
 
 Globals:
   Function:
@@ -34,8 +41,8 @@ Resources:
       Tracing: Active
       Role:
         Fn::GetAtt:
-        - LambdaExecutionRole
-        - Arn
+          - LambdaExecutionRole
+          - Arn
       Events:
         GetEvent:
           Type: Api
@@ -46,15 +53,15 @@ Resources:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'CodeStar-${ProjectId}-Execution-Lambda${Stage}'
+      RoleName: !Sub "CodeStar-${ProjectId}-Execution-Lambda${Stage}"
       AssumeRolePolicyDocument:
         Statement:
-        - Effect: Allow
-          Principal:
-            Service: [lambda.amazonaws.com]
-          Action: sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action: sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        -  arn:aws:iam::aws:policy/AWSLambdaFullAccess
-        -  arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-      PermissionsBoundary: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary'
+        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
