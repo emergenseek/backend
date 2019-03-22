@@ -28,7 +28,7 @@ Resources:
   ECSendSMSNotification:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: functions/ECSendSMSNotification
+      CodeUri: functions/ESSendSMSNotification
       Handler: main
       Runtime: go1.x
       Tracing: Active
@@ -46,14 +46,15 @@ Resources:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'CodeStar-${ProjectId}-Execution${Stage}'
+      RoleName: !Sub 'CodeStar-${ProjectId}-Execution-Lambda${Stage}'
       AssumeRolePolicyDocument:
         Statement:
         - Effect: Allow
           Principal:
             Service: [lambda.amazonaws.com]
           Action: sts:AssumeRole
-      Path: /sms
+      Path: /
       ManagedPolicyArns:
-        -  arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        -  arn:aws:iam::aws:policy/AWSLambdaFullAccess
+        -  arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
       PermissionsBoundary: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary'
