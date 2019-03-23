@@ -67,13 +67,12 @@ func (t *TwilioHandler) SendSMS(phoneNumber string, message string) error {
 }
 
 // SendVoiceCall provides EmergenSeek with voice call functionality
-func (t *TwilioHandler) SendVoiceCall(phoneNumbers []string) error {
-	callbackParams := gotwilio.NewCallbackParameters("http://example.com")
-	for _, number := range phoneNumbers {
-		_, _, err := t.Client.CallWithUrlCallbacks(t.TwilioNumber, number, callbackParams)
-		if err != nil {
-			return err
-		}
+func (t *TwilioHandler) SendVoiceCall(phoneNumber string) error {
+	callbackParams := gotwilio.NewCallbackParameters("https://gist.githubusercontent.com/swoldemi/52535e13478c32af468eeab9d10f4813/raw/1d2a2542399af84209f8011953559665f17cb01f/voice.xml")
+	callbackParams.Method = "GET"
+	_, _, err := t.Client.CallWithUrlCallbacks(t.TwilioNumber, phoneNumber, callbackParams)
+	if err != nil {
+		return err
 	}
 	return nil
 }
