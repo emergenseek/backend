@@ -29,6 +29,8 @@ Resources:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
+      RestApiId:
+        Ref: tzuvifn7ng
       ResourceId:
         Ref: ESSendSMSNotification
       HttpMethod: OPTIONS
