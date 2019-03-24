@@ -19,19 +19,10 @@ type DynamoConn struct {
 }
 
 // Create creates a new, private DynamoDB session
-func (d *DynamoConn) Create() error {
+func (d *DynamoConn) Create(sess *session.Session) error {
 	// Assume client is may already be authorized
 	if d.Client != nil {
-		return nil
-	}
-
-	// Initialize session
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(d.Region)},
-	)
-
-	if err != nil {
-		return err
+		return errors.New("db: dynamodb client already exists")
 	}
 
 	// Create DynamoDB client using session
