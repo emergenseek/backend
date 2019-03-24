@@ -99,3 +99,51 @@ func GetAddress(latlng []float64, key string) (string, error) {
 	address := fmt.Sprintf("%v, %v, %v, %v, %v", a.Street, a.City, a.State, a.PostalCode, a.CountryCode)
 	return address, nil
 }
+
+// CreateTwilMLXML creates the XML necessary for the gotwilio.NewCallbackParameters invocation in notification.SendVoiceCall
+func CreateTwilMLXML(user *models.User, lastLocation string) ([]byte, error) {
+	// Split phone number so Twilio voice doesn't read it numerically
+	splitPhoneNumber := fmt.Sprintf("%v", strings.Split(user.PhoneNumber, ""))
+
+	// Create message using address and user's information
+	name := user.FormattedName()
+	message := fmt.Sprintf("This is an automated emergency call from EmergenSeek on behalf of %v. ", name)
+	message = message + fmt.Sprintf("They are in need of emergency assistance. Please send help to %v. ", lastLocation)
+	message = message + fmt.Sprintf("Please attempt to call %v at %v. Thank you.", name, splitPhoneNumber)
+
+	// Create, format, and return the XML document
+	doc := etree.NewDocument()
+	doc.CreateProcInst("xml", `version="1.0" encoding="UTF-8"`)
+	response := doc.CreateElement("Response")
+	say := response.CreateElement("Say")
+	say.CreateAttr("voice", common.TwilioVoice)
+	say.CreateAttr("loop", "2")
+	say.SetText(message)
+	doc.Indent(2)
+	twilML, err := doc.WriteToBytes()
+	if err != nil {
+		return nil, err
+	}
+	return twilML, nil
+}
+
+// UploadTwilMLXML uploads the XML generated in CreateTwilMLXML and returns the URL for the object
+func UploadTwilMLXML(twilML []byte, sess *session.Session) (string, error) {
+	// Create a unique id for the object
+	id, _ := uuid.NewRandom()
+	objectKey := string([]rune(id.String())[0:7]) + ".xml"
+
+	// Upload to S3 bucket
+	_, err := s3.New(sess).PutObject(&s3.PutObjectInput{
+		Bucket:        aws.String(common.S3BucketName),
+		Key:           aws.String(objectKey),
+		ACL:           aws.String("public-read"),
+		Body:          bytes.NewReader(twilML),
+		ContentLength: aws.Int64(int64(len(twilML))),
+		ContentType:   aws.String("text/xml"),
+	})
+	if err != nil {
+		return "", err
+	}
+	return common.S3BucketLocation + objectKey, nil
+}
