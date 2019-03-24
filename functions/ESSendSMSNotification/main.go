@@ -41,7 +41,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	// Initialize drivers
-	db, twilio := driver.CreateAll()
+	db, twilio, _, _ := driver.CreateAll()
 
 	// Retrieve user from database
 	user, err := db.GetUser(req.UserID)
