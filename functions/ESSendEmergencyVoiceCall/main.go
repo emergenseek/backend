@@ -48,7 +48,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	// Initialize drivers
-	db, twilio := driver.CreateAll()
+	db, twilio, sess, mapKey := driver.CreateAll()
 
 	// Retrieve user from database
 	user, err := db.GetUser(req.UserID)
@@ -56,30 +56,39 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return driver.ErrorResponse(http.StatusBadRequest, err), nil
 	}
 
-	/* TODO
-	3. Extract last known location
-	4. Use last known location to get emergency service number (911 or 119, etc)
-	5. Generate message for voice call
-	6. Call all primary contacts and emergency service number
-	*/
+	// Convert the user's last known location to a human readable address
+	lastLocation, err := driver.GetAddress(convertTo64(user.LastKnownLocation), mapKey)
+	if err != nil {
+		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
+	}
 
-	// Update phoneNumbers to include all numbers necessary
+	// Create the Twilio Markdown Language necessary for the voice call
+	twilML, err := driver.CreateTwilMLXML(user, lastLocation)
+	if err != nil {
+		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
+	}
+
+	// Upload the TwilML to S3 so Twilio can access it
+	callbackURL, err := driver.UploadTwilMLXML(twilML, sess)
+	if err != nil {
+		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
+	}
+
 	for _, contact := range user.PrimaryContacts {
 		retry.Do(
-			func() error { return twilio.SendVoiceCall(contact.PhoneNumber) },
+			func() error { return twilio.SendVoiceCall(contact.PhoneNumber, callbackURL) },
 			retry.Attempts(3),
 		)
 	}
 	for _, contact := range user.SecondaryContacts {
 		retry.Do(
-			func() error { return twilio.SendVoiceCall(contact.PhoneNumber) },
+			func() error { return twilio.SendVoiceCall(contact.PhoneNumber, callbackURL) },
 			retry.Attempts(3),
 		)
 	}
 
 	bodyContent := fmt.Sprintf("Successfully sent emergency call to emergency services and contacts of user %v %v (%v)", user.FirstName, user.LastName, user.CognitoID)
 	return driver.SuccessfulResponse(bodyContent, user), nil
-
 }
 
 func main() {
