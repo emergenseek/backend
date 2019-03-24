@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/emergenseek/backend/common"
 	"github.com/emergenseek/backend/common/database"
 	"github.com/emergenseek/backend/common/models"
@@ -42,13 +44,19 @@ func SuccessfulResponse(bodyContent string, user *models.User) events.APIGateway
 }
 
 // CreateAll initializes the necessary API providers for Lambda handlers
-func CreateAll() (*database.DynamoConn, *notification.TwilioHandler) {
+func CreateAll() (*database.DynamoConn, *notification.TwilioHandler, *session.Session, string) {
+	// Create a shared session
+	sess := session.Must(session.NewSession(&aws.Config{Region: aws.String(common.Region)}))
+
 	// Initialize database
 	db := &database.DynamoConn{Region: common.Region}
-	err := db.Create()
+	err := db.Create(sess)
 	if err != nil {
 		panic(err)
 	}
+
+	// Get MapQuest credentials
+	mapsKey := db.MustGetMapsKey()
 
 	// Get Twilio client credentials using database
 	twilio := &notification.TwilioHandler{}
@@ -63,7 +71,7 @@ func CreateAll() (*database.DynamoConn, *notification.TwilioHandler) {
 	}
 
 	// Return for handler
-	return db, twilio
+	return db, twilio, sess, mapsKey
 }
 
 // CreateEmergencyMessage generates a message given a user's information and their severity
