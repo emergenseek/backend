@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -15,10 +14,6 @@ import (
 
 func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, []error) {
 	errs := []error{}
-	// Only allow JSON requests
-	if request.Headers["Content-Type"] != "application/json" {
-		return nil, http.StatusNotAcceptable, append(errs, errors.New("content-type must be application/json"))
-	}
 
 	// Create a new request object and unmarshal the request body into it
 	req := new(Request)
