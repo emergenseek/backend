@@ -10,6 +10,12 @@ const (
 	// LambdaSecretsTable defines the DyamoDB table used to store environment variables
 	LambdaSecretsTable = "LambdaSecrets"
 
+	// S3BucketName defines the name of the S3 bucket used by the application
+	S3BucketName = "emergenseek.com"
+
+	// S3BucketLocation defines the URL of the S3 bucket
+	S3BucketLocation = "https://s3.us-east-2.amazonaws.com/emergenseek.com/"
+
 	// Region defines the AWS VPC region used for development
 	Region = "us-east-2"
 
@@ -27,6 +33,12 @@ const (
 
 	// TwilioProduction defines the LambdaSecrets item ID of Twilio credentials for the paid account
 	TwilioProduction = "2"
+
+	// MapQuest defines the LambdaSecrets item ID containing MapQuest credentials
+	MapQuest = "3"
+
+	// TwilioVoice defines the Amazon Polly voice used for voice calls
+	TwilioVoice = "Polly.Kimberly"
 )
 
 // String converts an EmergencyType to its string name
