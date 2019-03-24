@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,10 +10,14 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/beevik/etree"
 	"github.com/emergenseek/backend/common"
 	"github.com/emergenseek/backend/common/database"
 	"github.com/emergenseek/backend/common/models"
 	"github.com/emergenseek/backend/common/notification"
+	"github.com/google/uuid"
+	"github.com/jasonwinn/geocoder"
 )
 
 var headers = map[string]string{"Content-Type": "application/json"}
@@ -82,4 +87,15 @@ func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User) s
 		%v has just triggered a level %d emergency (%v). Please contact them at %v to ensure their safety -EmergenSeek
 	`, name, emergency, emergency.String(), user.PhoneNumber)
 	return message
+}
+
+// GetAddress is used to ReverseGeocode a latlng combination into a precise address
+func GetAddress(latlng []float64, key string) (string, error) {
+	geocoder.SetAPIKey(key)
+	a, err := geocoder.ReverseGeocode(latlng[0], latlng[1])
+	if err != nil {
+		return "", err
+	}
+	address := fmt.Sprintf("%v, %v, %v, %v, %v", a.Street, a.City, a.State, a.PostalCode, a.CountryCode)
+	return address, nil
 }
