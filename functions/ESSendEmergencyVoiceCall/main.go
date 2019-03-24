@@ -2,23 +2,26 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
 	retry "github.com/avast/retry-go"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-
 	"github.com/emergenseek/backend/common/driver"
 )
 
-func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, error) {
-	// Only allow JSON requests
-	if request.Headers["Content-Type"] != "application/json" {
-		return nil, http.StatusNotAcceptable, errors.New("content-type must be application/json")
+func convertTo64(ar []float32) []float64 {
+	newar := make([]float64, len(ar))
+	var v float32
+	var i int
+	for i, v = range ar {
+		newar[i] = float64(v)
 	}
+	return newar
+}
 
+func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, error) {
 	// Create a new request object and unmarshal the request body into it
 	req := new(Request)
 	err := json.Unmarshal([]byte(request.Body), req)
