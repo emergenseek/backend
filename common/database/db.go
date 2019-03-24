@@ -75,6 +75,23 @@ func (d *DynamoConn) GetUser(uid string) (*models.User, error) {
 	return user, nil
 }
 
+// MustGetMapsKey retrives the MapQuest API key from the database
+func (d *DynamoConn) MustGetMapsKey() string {
+	result, err := d.Client.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(common.LambdaSecretsTable),
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				N: aws.String(common.MapQuest),
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	return *result.Item["MAPQUEST_CONSUMER_KEY"].S
+
+}
+
 // CreateUser will create a user for the application
 func (d *DynamoConn) CreateUser(user *models.User) (*dynamodb.PutItemOutput, error) {
 	// Marshal user struct into map for DynamoDB
