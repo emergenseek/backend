@@ -77,6 +77,32 @@ Resources:
       FunctionName: !Ref ESSendEmergencyVoiceCall
       Principal: apigateway.amazonaws.com
 
+  ESPollLocation:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESPollLocation
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /poll
+            Method: post
+  ConfigLambdaPermissionPoll:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESPollLocation
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESPollLocation
+      Principal: apigateway.amazonaws.com
+
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
