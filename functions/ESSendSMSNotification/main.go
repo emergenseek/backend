@@ -60,7 +60,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	case common.SEVERE:
 		// If the request type is SEVERE
 		// send an SMS message to all primary and secondary contacts with retry
-		message := driver.CreateEmergencyMessage(common.SEVERE, user, mapsKey, req.Location)
+		message, err := driver.CreateEmergencyMessage(common.SEVERE, user, mapsKey, req.Location)
+		if err != nil {
+			return driver.ErrorResponse(http.StatusInternalServerError, err), nil
+		}
+
 		for _, contact := range user.PrimaryContacts {
 			retry.Do(
 				func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
@@ -78,7 +82,11 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	case common.MILD:
 		// If the request type is MILD
 		// send an SMS message only to primary contacts with retry
-		message := driver.CreateEmergencyMessage(common.MILD, user, mapsKey, req.Location)
+		message, err := driver.CreateEmergencyMessage(common.MILD, user, mapsKey, req.Location)
+		if err != nil {
+			return driver.ErrorResponse(http.StatusInternalServerError, err), nil
+		}
+
 		for _, contact := range user.PrimaryContacts {
 			retry.Do(
 				func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
