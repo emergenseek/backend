@@ -4,6 +4,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -34,7 +35,7 @@ func (d *DynamoConn) Create(sess *session.Session) error {
 func (d *DynamoConn) GetUser(uid string) (*models.User, error) {
 	// Create user struct to be searched for using provided uid
 	userKey := &models.User{
-		CognitoID: uid,
+		UserID: uid,
 	}
 	key, err := dynamodbattribute.MarshalMap(userKey)
 	if err != nil {
@@ -104,4 +105,41 @@ func (d *DynamoConn) CreateUser(user *models.User) (*dynamodb.PutItemOutput, err
 	}
 
 	return output, nil
+}
+
+// UpdateLocation updates the location of a user when a location poll is invoked
+func (d *DynamoConn) UpdateLocation(userID string, location []float64) error {
+	var LocationUpdate struct {
+		LastKnownLocation []float64 `json:":l"`
+	}
+
+	// Marshal the update expression struct for DynamoDB
+	LocationUpdate.LastKnownLocation = location
+	expr, err := dynamodbattribute.MarshalMap(LocationUpdate)
+	if err != nil {
+		return fmt.Errorf("ok")
+
+	}
+
+	// Define table schema's key
+	key := map[string]*dynamodb.AttributeValue{
+		"user_id": {
+			S: aws.String(userID),
+		},
+	}
+
+	// Use marshalled map for UpdateItemInput
+	item := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: expr,
+		TableName:                 aws.String(common.UsersTableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		UpdateExpression:          aws.String("set last_known_location = :l"),
+	}
+
+	_, err = d.Client.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+	return nil
 }

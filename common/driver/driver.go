@@ -81,11 +81,12 @@ func CreateAll() (*database.DynamoConn, *notification.TwilioHandler, *session.Se
 
 // CreateEmergencyMessage generates a message given a user's information and their severity
 // Should not used with the CHECKIN emergency type
-func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User) string {
+func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, mapsKey string) string {
 	name := user.FormattedName()
-	message := fmt.Sprintf(`
-		%v has just triggered a level %d emergency (%v). Please contact them at %v to ensure their safety -EmergenSeek
-	`, name, emergency, emergency.String(), user.PhoneNumber)
+	location, _ := GetAddress(user.LastKnownLocation, mapsKey)
+	message := fmt.Sprintf("%v has just triggered a level %d emergency (%v). ", name, emergency, emergency.String())
+	message = message + fmt.Sprintf("Their last known location is %v. ", location)
+	message = message + fmt.Sprintf("Please contact them at %v to ensure their safety. -EmergenSeek", user.PhoneNumber)
 	return message
 }
 

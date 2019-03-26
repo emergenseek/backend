@@ -11,16 +11,6 @@ import (
 	"github.com/emergenseek/backend/common/driver"
 )
 
-func convertTo64(ar []float32) []float64 {
-	newar := make([]float64, len(ar))
-	var v float32
-	var i int
-	for i, v = range ar {
-		newar[i] = float64(v)
-	}
-	return newar
-}
-
 func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, error) {
 	// Create a new request object and unmarshal the request body into it
 	req := new(Request)
@@ -57,7 +47,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	// Convert the user's last known location to a human readable address
-	lastLocation, err := driver.GetAddress(convertTo64(user.LastKnownLocation), mapKey)
+	lastLocation, err := driver.GetAddress(user.LastKnownLocation, mapKey)
 	if err != nil {
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
@@ -87,7 +77,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		)
 	}
 
-	bodyContent := fmt.Sprintf("Successfully sent emergency call to emergency services and contacts of user %v %v (%v)", user.FirstName, user.LastName, user.CognitoID)
+	bodyContent := fmt.Sprintf("Successfully sent emergency call to emergency services and contacts of user %v %v (%v)", user.FirstName, user.LastName, user.UserID)
 	return driver.SuccessfulResponse(bodyContent, user), nil
 }
 

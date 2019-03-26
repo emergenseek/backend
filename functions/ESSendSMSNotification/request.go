@@ -15,6 +15,9 @@ type Request struct {
 
 	// The message to send to primary contacts
 	Message string `json:"message"`
+
+	// The user's location at the time of the request
+	Location []float64 `json:"last_known_location"`
 }
 
 // Validate validates a request to the ESSendSMSNotification Lambda function
@@ -40,5 +43,11 @@ func (r *Request) Validate() []error {
 	if len(errs) == 0 {
 		return nil
 	}
+
+	// Check if the Location is present
+	if r.Location == nil {
+		errs = append(errs, fmt.Errorf("last_known_location field is required"))
+	}
+
 	return errs
 }
