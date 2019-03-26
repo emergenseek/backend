@@ -81,11 +81,11 @@ func CreateAll() (*database.DynamoConn, *notification.TwilioHandler, *session.Se
 
 // CreateEmergencyMessage generates a message given a user's information and their severity
 // Should not used with the CHECKIN emergency type
-func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, mapsKey string) string {
+func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, mapsKey string, location []float64) string {
 	name := user.FormattedName()
-	location, _ := GetAddress(user.LastKnownLocation, mapsKey)
+	address, _ := GetAddress(location, mapsKey)
 	message := fmt.Sprintf("%v has just triggered a level %d emergency (%v). ", name, emergency, emergency.String())
-	message = message + fmt.Sprintf("Their last known location is %v. ", location)
+	message = message + fmt.Sprintf("Their last known location is %v. ", address)
 	message = message + fmt.Sprintf("Please contact them at %v to ensure their safety. -EmergenSeek", user.PhoneNumber)
 	return message
 }
@@ -97,7 +97,21 @@ func GetAddress(latlng []float64, key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	address := fmt.Sprintf("%v, %v, %v, %v, %v", a.Street, a.City, a.State, a.PostalCode, a.CountryCode)
+
+	// Format address parts
+	address := fmt.Sprintf("%v, ", a.Street)
+	if a.City != "" {
+		address = address + fmt.Sprintf("%v, ", a.City)
+	}
+	if a.State != "" {
+		address = address + fmt.Sprintf("%v, ", a.State)
+	}
+	if a.PostalCode != "" {
+		address = address + fmt.Sprintf("%v, ", a.PostalCode)
+	}
+	if a.CountryCode != "" {
+		address = address + fmt.Sprintf("%v", a.CountryCode)
+	}
 	return address, nil
 }
 
