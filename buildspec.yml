@@ -14,9 +14,6 @@ phases:
       # Install Testify to use common assertions and mocks in tests
       - go get -u github.com/stretchr/testify
 
-      # Install Twilio SDK
-      - go get -u github.com/sfreiberg/gotwilio
-      
   pre_build:
     commands:
       # Run pre-build checks for ESSendSMSNotification
@@ -44,6 +41,13 @@ phases:
       - go tool vet .
       - go test .
 
+      # Run pre-build checks for ESPollLocation
+      - cd "/go/src/handler/functions/ESPollLocation"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+      - go test .
+
 
   build:
     commands:
@@ -59,6 +63,15 @@ phases:
       # Run build ESSendEmergencyVoiceCall
       # Change directory into ESSendEmergencyVoiceCall
       - cd "/go/src/handler/functions/ESSendEmergencyVoiceCall"
+      
+      # Build our go application
+      - go build -o main
+      
+      # ==================================================
+
+      # Run build ESPollLocation
+      # Change directory into ESPollLocation
+      - cd "/go/src/handler/functions/ESPollLocation"
       
       # Build our go application
       - go build -o main
