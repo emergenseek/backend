@@ -81,7 +81,7 @@ Resources:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "CodeStar-${ProjectId}-Execution-Lambda${Stage}"
+      RoleName: "CodeStar-${ProjectId}-Execution-Lambda"
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -90,6 +90,5 @@ Resources:
             Action: sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-        - arn:aws:iam::aws:policy/AWSXrayFullAccess
+       - arn:aws:iam::aws:policy/AdministratorAccess
+      PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
