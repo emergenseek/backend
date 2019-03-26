@@ -81,7 +81,7 @@ Resources:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
     Properties:
-      RoleName: "CodeStar-${ProjectId}-Execution-Lambda"
+      RoleName: "CodeStar-emergenseek-bac-Execution-Lambda"
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
