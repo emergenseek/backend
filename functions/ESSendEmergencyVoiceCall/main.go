@@ -46,14 +46,17 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return driver.ErrorResponse(http.StatusBadRequest, err), nil
 	}
 
+	// Update the user's last known location
+	err = db.UpdateLocation(user.UserID, req.Location)
+
 	// Convert the user's last known location to a human readable address
-	lastLocation, err := driver.GetAddress(user.LastKnownLocation, mapKey)
+	address, err := driver.GetAddress(req.Location, mapKey)
 	if err != nil {
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
 
 	// Create the Twilio Markdown Language necessary for the voice call
-	twilML, err := driver.CreateTwilMLXML(user, lastLocation)
+	twilML, err := driver.CreateTwilMLXML(user, address)
 	if err != nil {
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
