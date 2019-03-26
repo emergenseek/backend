@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/aws"
@@ -81,13 +82,17 @@ func CreateAll() (*database.DynamoConn, *notification.TwilioHandler, *session.Se
 
 // CreateEmergencyMessage generates a message given a user's information and their severity
 // Should not used with the CHECKIN emergency type
-func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, mapsKey string, location []float64) string {
+func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, mapsKey string, location []float64) (string, error) {
 	name := user.FormattedName()
-	address, _ := GetAddress(location, mapsKey)
+	address, err := GetAddress(location, mapsKey)
+	if err != nil {
+		return "", err
+	}
+
 	message := fmt.Sprintf("%v has just triggered a level %d emergency (%v). ", name, emergency, emergency.String())
 	message = message + fmt.Sprintf("Their last known location is %v. ", address)
 	message = message + fmt.Sprintf("Please contact them at %v to ensure their safety. -EmergenSeek", user.PhoneNumber)
-	return message
+	return message, nil
 }
 
 // GetAddress is used to ReverseGeocode a latlng combination into a precise address
@@ -161,4 +166,19 @@ func UploadTwilMLXML(twilML []byte, sess *session.Session) (string, error) {
 		return "", err
 	}
 	return common.S3BucketLocation + objectKey, nil
+}
+
+// CreatePollMessage creates the
+func CreatePollMessage(user *models.User, mapsKey string, location []float64) (string, error) {
+	name := user.FormattedName()
+	address, err := GetAddress(location, mapsKey)
+	loc, _ := time.LoadLocation("UTC")
+	if err != nil {
+		return "", err
+	}
+
+	message := fmt.Sprintf("Location Update from %v! ", name)
+	message = message + fmt.Sprintf("Location: %v. ", address)
+	message = message + fmt.Sprintf("Date & Time: %v.", time.Now().In(loc).Format("Mon 01-02-2006 15:04:05"))
+	return message, nil
 }
