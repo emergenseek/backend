@@ -4,7 +4,6 @@ package database
 
 import (
 	"errors"
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -117,7 +116,7 @@ func (d *DynamoConn) UpdateLocation(userID string, location []float64) error {
 	LocationUpdate.LastKnownLocation = location
 	expr, err := dynamodbattribute.MarshalMap(LocationUpdate)
 	if err != nil {
-		return fmt.Errorf("ok")
+		return err
 
 	}
 

@@ -11,13 +11,15 @@ import (
 func TestHandler(t *testing.T) {
 	successfulResponse := "{\"body\":\"Successfully sent emergency call to emergency services and contacts of user John Doe (e78e0c86-f9ba-4375-9554-6dc1426f5605)\"}"
 	tests := []struct {
-		name         string
-		UserID       string
-		ExpectedBody string
+		name              string
+		UserID            string
+		LastKnownLocation []float64
+		ExpectedBody      string
 	}{
 		{
 			"Simple Request",
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			[]float64{40.7648, -73.9808},
 			successfulResponse,
 		},
 	}
@@ -26,7 +28,8 @@ func TestHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Logf("Running test: %v", tt.name)
 			r := Request{
-				UserID: tt.UserID,
+				UserID:   tt.UserID,
+				Location: tt.LastKnownLocation,
 			}
 
 			b, _ := json.Marshal(r)
