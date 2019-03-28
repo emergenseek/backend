@@ -58,7 +58,9 @@ func TestHandler(t *testing.T) {
 			1,
 			"",
 			[]float64{40.7648, -73.9808},
+			"{\"code\":\"Bad Request\",\"error\":\"user_id field is required\"}",
 		},
+		{
 			"Invalid EmergencyType",
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			50,

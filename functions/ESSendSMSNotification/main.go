@@ -39,9 +39,6 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	if errs != nil {
 		return driver.ErrorResponse(status, errs...), nil
 	}
-	// All checks passed, return req struct for use. http.StatusOK is ignored
-	return req, http.StatusOK, nil
-}
 
 	// Initialize drivers
 	db, twilio, _, mapsKey := driver.CreateAll()
@@ -111,7 +108,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	// Return successful response
 	bodyContent := fmt.Sprintf("Successfully sent SMS to contacts of user %v %v (%v)", user.FirstName, user.LastName, user.UserID)
-	return driver.SuccessfulResponse(bodyContent, user), nil
+	return driver.SuccessfulResponse(bodyContent), nil
 }
 
 func main() {
