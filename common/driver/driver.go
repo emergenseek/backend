@@ -40,7 +40,7 @@ func ErrorResponse(status int, errs ...error) events.APIGatewayProxyResponse {
 }
 
 // SuccessfulResponse prepares and sends a successful server response for this Lambda function
-func SuccessfulResponse(bodyContent string, user *models.User) events.APIGatewayProxyResponse {
+func SuccessfulResponse(bodyContent string) events.APIGatewayProxyResponse {
 	body, _ := json.Marshal(map[string]string{"body": bodyContent})
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,

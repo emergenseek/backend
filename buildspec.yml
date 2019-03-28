@@ -48,6 +48,12 @@ phases:
       - go tool vet .
       - go test .
 
+      
+      - cd "/go/src/handler/functions/ESGetLockScreenInfo"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+
 
   build:
     commands:
@@ -75,6 +81,15 @@ phases:
       
       # Build our go application
       - go build -o main
+      
+      # Run build ESGetLockScreenInfo
+      # Change directory into ESGetLockScreenInfo
+      - cd "/go/src/handler/functions/ESGetLockScreenInfo"
+      
+      # Build our go application
+      - go build -o main
+      
+      # ==================================================
       
       # Go back to the root of the repository
       - cd "/go/src/handler"
