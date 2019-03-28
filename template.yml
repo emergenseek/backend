@@ -142,5 +142,5 @@ Resources:
             Action: sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-       - arn:aws:iam::aws:policy/AdministratorAccess
+       - arn:aws:iam::aws:policy/AdministratorAccess # Bad practice to use AdministratorAccess
       PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"

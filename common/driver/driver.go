@@ -179,6 +179,6 @@ func CreatePollMessage(user *models.User, mapsKey string, location []float64) (s
 
 	message := fmt.Sprintf("Location Update from %v! ", name)
 	message = message + fmt.Sprintf("Location: %v. ", address)
-	message = message + fmt.Sprintf("Date & Time: %v.", time.Now().In(loc).Format("Mon 01-02-2006 15:04:05"))
+	message = message + fmt.Sprintf("Date & Time: %v UTC.", time.Now().In(loc).Format("Mon 01-02-2006 15:04:05"))
 	return message, nil
 }
