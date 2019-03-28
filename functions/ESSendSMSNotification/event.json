@@ -1,5 +1,7 @@
 {
     "user_id": "e78e0c86-f9ba-4375-9554-6dc1426f5605",
-    "type": 3,
-    "message": "Hello from Lambda, Simon"
+    "type": 1,
+    "message": "Hello from Lambda, Simon",
+    "last_known_location": [22.2976851, 114.1675614]
+    
 }

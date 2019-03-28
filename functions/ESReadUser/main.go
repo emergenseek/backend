@@ -10,8 +10,8 @@ import (
 	"github.com/emergenseek/backend/common/models"
 )
 
-//CreateUserDB to create user data, then READ
-func CreateUserDB() {
+//GetUserDB to read user data
+func GetUserDB() {
 
 	config := &aws.Config{Region: aws.String("us-east-2")}
 
@@ -19,7 +19,7 @@ func CreateUserDB() {
 
 	svc := dynamodb.New(sess)
 
-	user := models.User{
+	userKey := models.User{
 		FirstName: "Anni",
 		LastName:  "Xcmneo",
 		BloodType: "Rh+",
@@ -35,19 +35,47 @@ func CreateUserDB() {
 		EmailAddress: "cognido_id@hotmail.com",
 	}
 
-	av, err := dynamodbattribute.MarshalMap(user)
-
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String("EmergenSeekUsers"),
-	}
-	_, err = svc.PutItem(input)
+	key, err := dynamodbattribute.MarshalMap(userKey)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
+
+	input := &dynamodb.GetItemInput{
+		Key:       key,
+		TableName: aws.String("EmergenSeekUsers"),
+	}
+
+	result, err := svc.GetItem(input)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	user := models.User{}
+	err = dynamodbattribute.UnmarshalMap(result.Item, &user)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	/*
+		infoMap := movie.Info.(map[string]interface{})
+		for k, v := range infoMap {
+			switch vv := v.(type) {
+			case string, float64:
+				fmt.Println(k, ": ", vv)
+			case []interface{}:
+				for i, u := range vv {
+					fmt.Println(i, u)
+				}
+			default:
+				fmt.Println(k, "is of a type I don't know how to handle")
+			}
+		}
+	*/
 }
 
 func main() {
-	CreateUserDB()
+	GetUserDB()
 }

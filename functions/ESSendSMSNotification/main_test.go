@@ -13,17 +13,19 @@ func TestHandler(t *testing.T) {
 	message := "Hello from Lambda"
 	successfulResponse := "{\"body\":\"Successfully sent SMS to contacts of user John Doe (e78e0c86-f9ba-4375-9554-6dc1426f5605)\"}"
 	tests := []struct {
-		name         string
-		UserID       string
-		Type         common.EmergencyType
-		Message      string
-		ExpectedBody string
+		name              string
+		UserID            string
+		Type              common.EmergencyType
+		Message           string
+		LastKnownLocation []float64
+		ExpectedBody      string
 	}{
 		{
 			"SEVERE Emergency Request",
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			1,
 			"",
+			[]float64{40.7648, -73.9808},
 			successfulResponse,
 		},
 		{
@@ -31,6 +33,7 @@ func TestHandler(t *testing.T) {
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			2,
 			"",
+			[]float64{40.7648, -73.9808},
 			successfulResponse,
 		},
 		{
@@ -38,6 +41,7 @@ func TestHandler(t *testing.T) {
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			3,
 			message,
+			[]float64{40.7648, -73.9808},
 			successfulResponse,
 		},
 		{
@@ -45,6 +49,7 @@ func TestHandler(t *testing.T) {
 			"e78e0c86-f9ba-4375-9554-6dc1426f5600",
 			1,
 			"",
+			[]float64{40.7648, -73.9808},
 			"{\"code\":\"Bad Request\",\"error\":\"user not found\"}",
 		},
 		{
@@ -52,13 +57,13 @@ func TestHandler(t *testing.T) {
 			"",
 			1,
 			"",
-			"{\"code\":\"Bad Request\",\"error\":\"user_id field is required\"}",
+			[]float64{40.7648, -73.9808},
 		},
-		{
 			"Invalid EmergencyType",
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			50,
 			"",
+			[]float64{40.7648, -73.9808},
 			"{\"code\":\"Bad Request\",\"error\":\"50 is an invalid emergency type\"}",
 		},
 		{
@@ -66,6 +71,7 @@ func TestHandler(t *testing.T) {
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			3,
 			"",
+			[]float64{40.7648, -73.9808},
 			"{\"code\":\"Bad Request\",\"error\":\"message field is required because emergency type is 3\"}",
 		},
 		{
@@ -73,6 +79,7 @@ func TestHandler(t *testing.T) {
 			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
 			2,
 			"",
+			[]float64{40.7648, -73.9808},
 			successfulResponse,
 		},
 	}
@@ -81,9 +88,10 @@ func TestHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Logf("Running test: %v", tt.name)
 			r := Request{
-				UserID:  tt.UserID,
-				Type:    tt.Type,
-				Message: tt.Message,
+				UserID:   tt.UserID,
+				Type:     tt.Type,
+				Message:  tt.Message,
+				Location: tt.LastKnownLocation,
 			}
 
 			b, _ := json.Marshal(r)
