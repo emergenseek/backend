@@ -39,7 +39,7 @@ func ErrorResponse(status int, errs ...error) events.APIGatewayProxyResponse {
 	}
 }
 
-// SuccessfulResponse prepares and sends a successful server response for this Lambda function
+// SuccessfulResponse prepares and sends a successful server response for the calling Lambda function
 func SuccessfulResponse(bodyContent string) events.APIGatewayProxyResponse {
 	body, _ := json.Marshal(map[string]string{"body": bodyContent})
 	return events.APIGatewayProxyResponse{

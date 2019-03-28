@@ -72,7 +72,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	bodyContent := fmt.Sprintf("Successfully sent poll message to contents of user %v %v (%v)", user.FirstName, user.LastName, user.UserID)
-	return driver.SuccessfulResponse(bodyContent, user), nil
+	return driver.SuccessfulResponse(bodyContent), nil
 }
 
 func main() {
