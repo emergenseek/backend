@@ -14,9 +14,6 @@ phases:
       # Install Testify to use common assertions and mocks in tests
       - go get -u github.com/stretchr/testify
 
-      # Install Twilio SDK
-      - go get -u github.com/sfreiberg/gotwilio
-      
   pre_build:
     commands:
       # Run pre-build checks for ESSendSMSNotification
@@ -35,6 +32,29 @@ phases:
       # Run all tests included with our application
       - go test .
 
+      # ==================================================
+
+      # Run pre-build checks for ESSendSMSNotification
+      - cd "/go/src/handler/functions/ESSendEmergencyVoiceCall"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+      - go test .
+
+      # Run pre-build checks for ESPollLocation
+      - cd "/go/src/handler/functions/ESPollLocation"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+      - go test .
+
+      
+      - cd "/go/src/handler/functions/ESGetLockScreenInfo"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+
+
   build:
     commands:
       # Run build ESSendSMSNotification
@@ -43,6 +63,33 @@ phases:
       
       # Build our go application
       - go build -o main
+
+      # ==================================================
+
+      # Run build ESSendEmergencyVoiceCall
+      # Change directory into ESSendEmergencyVoiceCall
+      - cd "/go/src/handler/functions/ESSendEmergencyVoiceCall"
+      
+      # Build our go application
+      - go build -o main
+      
+      # ==================================================
+
+      # Run build ESPollLocation
+      # Change directory into ESPollLocation
+      - cd "/go/src/handler/functions/ESPollLocation"
+      
+      # Build our go application
+      - go build -o main
+      
+      # Run build ESGetLockScreenInfo
+      # Change directory into ESGetLockScreenInfo
+      - cd "/go/src/handler/functions/ESGetLockScreenInfo"
+      
+      # Build our go application
+      - go build -o main
+      
+      # ==================================================
       
       # Go back to the root of the repository
       - cd "/go/src/handler"

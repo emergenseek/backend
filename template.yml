@@ -22,9 +22,10 @@ Globals:
       Enabled: true
       Type: AllAtOnce
       Role: !Ref CodeDeployRole
-      Timeout: 5
+      Timeout: 30
 
 Resources:
+<<<<<<< HEAD
   OptionsMethod:
     Type: AWS::ApiGateway::Method
     Properties:
@@ -56,6 +57,8 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
 
+=======
+>>>>>>> 2943e91cfa7042f9c1dcaf74e16d165eead17a55
   ESSendSMSNotification:
     Type: AWS::Serverless::Function
     Properties:
@@ -68,16 +71,107 @@ Resources:
           - LambdaExecutionRole
           - Arn
       Events:
-        GetEvent:
+        PostEvent:
           Type: Api
           Properties:
             Path: /sms
-            Method: POST
+            Method: post
+  ConfigLambdaPermissionSMSNotification:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESSendSMSNotification
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESSendSMSNotification
+      Principal: apigateway.amazonaws.com
+  
+  ESSendEmergencyVoiceCall:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESSendEmergencyVoiceCall
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /voice
+            Method: post
+  ConfigLambdaPermissionVoice:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESSendEmergencyVoiceCall
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESSendEmergencyVoiceCall
+      Principal: apigateway.amazonaws.com
+
+  ESPollLocation:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESPollLocation
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /poll
+            Method: post
+  ConfigLambdaPermissionPoll:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESPollLocation
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESPollLocation
+      Principal: apigateway.amazonaws.com
+
+  ESGetLockScreenInfo:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESGetLockScreenInfo
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /lock
+            Method: post
+  ConfigLambdaPermissionLock:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESGetLockScreenInfo
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESGetLockScreenInfo
+      Principal: apigateway.amazonaws.com
+  
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
     Properties:
+<<<<<<< HEAD
       RoleName: !Sub "CodeStar-${ProjectId}-Execution-Lambda${Stage}"
+=======
+      RoleName: "CodeStar-emergenseek-bac-Execution-Lambda"
+>>>>>>> 2943e91cfa7042f9c1dcaf74e16d165eead17a55
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -86,7 +180,12 @@ Resources:
             Action: sts:AssumeRole
       Path: /
       ManagedPolicyArns:
+<<<<<<< HEAD
         - arn:aws:iam::aws:policy/AWSLambdaFullAccess
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
         - arn:aws:iam::aws:policy/AWSXrayFullAccess
       PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
+=======
+       - arn:aws:iam::aws:policy/AdministratorAccess # Bad practice to use AdministratorAccess
+      PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
+>>>>>>> 2943e91cfa7042f9c1dcaf74e16d165eead17a55

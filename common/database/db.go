@@ -19,19 +19,10 @@ type DynamoConn struct {
 }
 
 // Create creates a new, private DynamoDB session
-func (d *DynamoConn) Create() error {
+func (d *DynamoConn) Create(sess *session.Session) error {
 	// Assume client is may already be authorized
 	if d.Client != nil {
-		return nil
-	}
-
-	// Initialize session
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(d.Region)},
-	)
-
-	if err != nil {
-		return err
+		return errors.New("db: dynamodb client already exists")
 	}
 
 	// Create DynamoDB client using session
@@ -43,7 +34,7 @@ func (d *DynamoConn) Create() error {
 func (d *DynamoConn) GetUser(uid string) (*models.User, error) {
 	// Create user struct to be searched for using provided uid
 	userKey := &models.User{
-		CognitoID: uid,
+		UserID: uid,
 	}
 	key, err := dynamodbattribute.MarshalMap(userKey)
 	if err != nil {
@@ -75,6 +66,23 @@ func (d *DynamoConn) GetUser(uid string) (*models.User, error) {
 	return user, nil
 }
 
+// MustGetMapsKey retrives the MapQuest API key from the database
+func (d *DynamoConn) MustGetMapsKey() string {
+	result, err := d.Client.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(common.LambdaSecretsTable),
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				N: aws.String(common.MapQuest),
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	return *result.Item["MAPQUEST_CONSUMER_KEY"].S
+
+}
+
 // CreateUser will create a user for the application
 func (d *DynamoConn) CreateUser(user *models.User) (*dynamodb.PutItemOutput, error) {
 	// Marshal user struct into map for DynamoDB
@@ -96,4 +104,41 @@ func (d *DynamoConn) CreateUser(user *models.User) (*dynamodb.PutItemOutput, err
 	}
 
 	return output, nil
+}
+
+// UpdateLocation updates the location of a user when a location poll is invoked
+func (d *DynamoConn) UpdateLocation(userID string, location []float64) error {
+	var LocationUpdate struct {
+		LastKnownLocation []float64 `json:":l"`
+	}
+
+	// Marshal the update expression struct for DynamoDB
+	LocationUpdate.LastKnownLocation = location
+	expr, err := dynamodbattribute.MarshalMap(LocationUpdate)
+	if err != nil {
+		return err
+
+	}
+
+	// Define table schema's key
+	key := map[string]*dynamodb.AttributeValue{
+		"user_id": {
+			S: aws.String(userID),
+		},
+	}
+
+	// Use marshalled map for UpdateItemInput
+	item := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: expr,
+		TableName:                 aws.String(common.UsersTableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		UpdateExpression:          aws.String("set last_known_location = :l"),
+	}
+
+	_, err = d.Client.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+	return nil
 }
