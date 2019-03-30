@@ -25,40 +25,6 @@ Globals:
       Timeout: 30
 
 Resources:
-<<<<<<< HEAD
-  OptionsMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      RestApiId:
-        Ref: tzuvifn7ng
-      ResourceId:
-        Ref: ESSendSMSNotification
-      HttpMethod: OPTIONS
-      Integration:
-        IntegrationResponses:
-          - StatusCode: 200
-            ResponseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            ResponseTemplates:
-              application/json: ""
-        PassthroughBehavior: WHEN_NO_MATCH
-        RequestTemplates:
-          application/json: '{"statusCode": 200}'
-        Type: MOCK
-      MethodResponses:
-        - StatusCode: 200
-          ResponseModels:
-            application/json: "Empty"
-          ResponseParameters:
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
-
-=======
->>>>>>> 2943e91cfa7042f9c1dcaf74e16d165eead17a55
   ESSendSMSNotification:
     Type: AWS::Serverless::Function
     Properties:
@@ -167,11 +133,7 @@ Resources:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
     Properties:
-<<<<<<< HEAD
-      RoleName: !Sub "CodeStar-${ProjectId}-Execution-Lambda${Stage}"
-=======
       RoleName: "CodeStar-emergenseek-bac-Execution-Lambda"
->>>>>>> 2943e91cfa7042f9c1dcaf74e16d165eead17a55
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -180,12 +142,5 @@ Resources:
             Action: sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-<<<<<<< HEAD
-        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-        - arn:aws:iam::aws:policy/AWSXrayFullAccess
-      PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
-=======
        - arn:aws:iam::aws:policy/AdministratorAccess # Bad practice to use AdministratorAccess
       PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
->>>>>>> 2943e91cfa7042f9c1dcaf74e16d165eead17a55
