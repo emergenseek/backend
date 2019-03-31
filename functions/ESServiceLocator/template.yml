@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ESServiceLocator
+  
+  SAM template for locally testing ESServiceLocator
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  ESServiceLocator:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: main.zip
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events:
+        CatchAll:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /locate
+            Method: POST
+
+Outputs:
+  ESServiceLocatorAPI:
+    Description: "API Gateway endpoint URL for Dev environment for ESServiceLocator function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/"
+
+  ESServiceLocator:
+    Description: "ESServiceLocator function ARN"
+    Value: !GetAtt ESServiceLocator.Arn
+
+  ESServiceLocatorIamRole:
+    Description: "Implicit IAM Role created for ESServiceLocator function"
+    Value: !GetAtt ESServiceLocatorRole.Arn

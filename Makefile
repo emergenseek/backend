@@ -10,7 +10,8 @@ install:
 	go get -u github.com/aws/aws-lambda-go/events
 	go get -u github.com/sfreiberg/gotwilio
 	go get -u github.com/aws/aws-lambda-go/cmd/build-lambda-zip
-
+	go get -u github.com/beevik/etree
+	go get -u github.com/avast/retry-go
 fmt:
 	gofmt -s -w .
 	goreportcard-cli -v -t 90
