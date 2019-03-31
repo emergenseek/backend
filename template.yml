@@ -146,7 +146,7 @@ Resources:
           Properties:
             Path: /locate
             Method: post
-  ConfigLambdaPermissionPoll:
+  ConfigLambdaPermissionLocator:
     Type: AWS::Lambda::Permission
     DependsOn:
       - ESServiceLocator
