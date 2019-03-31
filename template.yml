@@ -129,6 +129,32 @@ Resources:
       FunctionName: !Ref ESGetLockScreenInfo
       Principal: apigateway.amazonaws.com
   
+  ESServiceLocator:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESServiceLocator
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /locate
+            Method: post
+  ConfigLambdaPermissionPoll:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESServiceLocator
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESServiceLocator
+      Principal: apigateway.amazonaws.com
+
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role

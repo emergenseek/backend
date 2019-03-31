@@ -189,10 +189,10 @@ func CreatePollMessage(user *models.User, mapsKey string, location []float64) (s
 func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, error) {
 	// Every element in the response body will have these attributes
 	type LocationItem struct {
-		Address string `json:"address,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Icon    string `json:"icon,omitempty"`
-		Open    bool   `json:"open,omitempty"`
+		Location maps.LatLng `json:"location"`
+		Name     string      `json:"name"`
+		Icon     string      `json:"icon"`
+		Open     bool        `json:"open"`
 	}
 
 	// Retrive maps key
@@ -211,7 +211,7 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 			Lat: location[0],
 			Lng: location[1],
 		},
-		Radius:  uint(10), // 10 mile radius
+		Radius:  uint(20), // 10 mile radius
 		Keyword: "pharmacy",
 	}
 
@@ -223,12 +223,18 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 
 	// Extract only necessary attributes from pharmacy query
 	locationItems := []LocationItem{}
+	open := false
 	for _, i := range pharmacyResponse.Results {
+		if i.OpeningHours != nil {
+			if i.OpeningHours.OpenNow != nil {
+				open = *i.OpeningHours.OpenNow
+			}
+		}
 		item := LocationItem{
-			Address: i.FormattedAddress,
-			Name:    i.Name,
-			Icon:    i.Icon,
-			Open:    *i.OpeningHours.OpenNow,
+			Location: i.Geometry.Location,
+			Name:     i.Name,
+			Icon:     i.Icon,
+			Open:     open,
 		}
 		locationItems = append(locationItems, item)
 	}
@@ -240,7 +246,7 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 			Lat: location[0],
 			Lng: location[1],
 		},
-		Radius:  uint(10), // 10 mile radius
+		Radius:  uint(20), // 10 mile radius
 		Keyword: "hospital",
 	}
 
@@ -250,14 +256,19 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 		return "", err
 	}
 
-	// Extract only necessary attributes from pharmacy query
 	// continue appending to locationItems slice previously declared
+	open = false
 	for _, i := range hospitalResponse.Results {
+		if i.OpeningHours != nil {
+			if i.OpeningHours.OpenNow != nil {
+				open = *i.OpeningHours.OpenNow
+			}
+		}
 		item := LocationItem{
-			Address: i.FormattedAddress,
-			Name:    i.Name,
-			Icon:    i.Icon,
-			Open:    *i.OpeningHours.OpenNow,
+			Location: i.Geometry.Location,
+			Name:     i.Name,
+			Icon:     i.Icon,
+			Open:     open,
 		}
 		locationItems = append(locationItems, item)
 	}
