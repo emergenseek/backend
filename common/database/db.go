@@ -4,6 +4,7 @@ package database
 
 import (
 	"errors"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -141,4 +142,20 @@ func (d *DynamoConn) UpdateLocation(userID string, location []float64) error {
 		return err
 	}
 	return nil
+}
+
+// MustGetGMapsKey retrives the Google Maps API
+func (d *DynamoConn) MustGetGMapsKey() string {
+	result, err := d.Client.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(common.LambdaSecretsTable),
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				N: aws.String(common.GoogleMaps),
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	return *result.Item["MAPS_API_KEY"].S
 }

@@ -2,6 +2,7 @@ package driver
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -18,7 +19,8 @@ import (
 	"github.com/emergenseek/backend/common/models"
 	"github.com/emergenseek/backend/common/notification"
 	"github.com/google/uuid"
-	"github.com/jasonwinn/geocoder"
+	"github.com/jasonwinn/geocoder" // For geocoding
+	"googlemaps.github.io/maps"     // For Google Places API
 )
 
 var headers = map[string]string{"Content-Type": "application/json"}
@@ -181,4 +183,89 @@ func CreatePollMessage(user *models.User, mapsKey string, location []float64) (s
 	message = message + fmt.Sprintf("Location: %v. ", address)
 	message = message + fmt.Sprintf("Date & Time: %v UTC.", time.Now().In(loc).Format("Mon 01-02-2006 15:04:05"))
 	return message, nil
+}
+
+// GetEmergencyServices retrives hospitals and pharmacies within a 10 mile radius of the given location
+func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, error) {
+	// Every element in the response body will have these attributes
+	type LocationItem struct {
+		Address string `json:"address,omitempty"`
+		Name    string `json:"name,omitempty"`
+		Icon    string `json:"icon,omitempty"`
+		Open    bool   `json:"open,omitempty"`
+	}
+
+	// Retrive maps key
+	gmapsKey := db.MustGetGMapsKey()
+
+	// Authenticate a new Maps API client
+	c, err := maps.NewClient(maps.WithAPIKey(gmapsKey))
+	if err != nil {
+		return "", err
+	}
+
+	// Create a search for nearby places using the current location
+	// Reference: https://github.com/googlemaps/google-maps-services-go/blob/master/places.go#L134
+	pharmacyRequest := &maps.NearbySearchRequest{
+		Location: &maps.LatLng{
+			Lat: location[0],
+			Lng: location[1],
+		},
+		Radius:  uint(10), // 10 mile radius
+		Keyword: "pharmacy",
+	}
+
+	// Make request to Google Places API
+	pharmacyResponse, err := c.NearbySearch(context.Background(), pharmacyRequest)
+	if err != nil {
+		return "", err
+	}
+
+	// Extract only necessary attributes from pharmacy query
+	locationItems := []LocationItem{}
+	for _, i := range pharmacyResponse.Results {
+		item := LocationItem{
+			Address: i.FormattedAddress,
+			Name:    i.Name,
+			Icon:    i.Icon,
+			Open:    *i.OpeningHours.OpenNow,
+		}
+		locationItems = append(locationItems, item)
+	}
+	fmt.Printf("%+v", locationItems)
+
+	// Do the same thing for hospital query
+	hospitalRequest := &maps.NearbySearchRequest{
+		Location: &maps.LatLng{
+			Lat: location[0],
+			Lng: location[1],
+		},
+		Radius:  uint(10), // 10 mile radius
+		Keyword: "hospital",
+	}
+
+	// Make request to Google Places API
+	hospitalResponse, err := c.NearbySearch(context.Background(), hospitalRequest)
+	if err != nil {
+		return "", err
+	}
+
+	// Extract only necessary attributes from pharmacy query
+	// continue appending to locationItems slice previously declared
+	for _, i := range hospitalResponse.Results {
+		item := LocationItem{
+			Address: i.FormattedAddress,
+			Name:    i.Name,
+			Icon:    i.Icon,
+			Open:    *i.OpeningHours.OpenNow,
+		}
+		locationItems = append(locationItems, item)
+	}
+	fmt.Printf("%+v", locationItems)
+
+	j, err := json.Marshal(locationItems)
+	if err != nil {
+		return "", err
+	}
+	return string(j), nil
 }

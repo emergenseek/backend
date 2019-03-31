@@ -34,8 +34,11 @@ const (
 	// TwilioProduction defines the LambdaSecrets item ID of Twilio credentials for the paid account
 	TwilioProduction = "2"
 
-	// MapQuest defines the LambdaSecrets item ID containing MapQuest credentials
+	// MapQuest defines the LambdaSecrets item ID containing MapQuest API credentials
 	MapQuest = "3"
+
+	// GoogleMaps defines the LambdaSecrets item ID containing Google Maps API credentials
+	GoogleMaps = "4"
 
 	// TwilioVoice defines the Amazon Polly voice used for voice calls
 	TwilioVoice = "Polly.Kimberly"
