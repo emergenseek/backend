@@ -86,7 +86,9 @@ phases:
       
       # Build our go application
       - go build -o main
-      
+
+      # ==================================================
+
       # Run build ESGetLockScreenInfo
       # Change directory into ESGetLockScreenInfo
       - cd "/go/src/handler/functions/ESGetLockScreenInfo"
@@ -96,6 +98,15 @@ phases:
       
       # ==================================================
       
+      # Run build ESServiceLocator
+      # Change directory into ESServiceLocator
+      - cd "/go/src/handler/functions/ESServiceLocator"
+      
+      # Build our go application
+      - go build -o main
+      
+      # ==================================================
+
       # Go back to the root of the repository
       - cd "/go/src/handler"
       
