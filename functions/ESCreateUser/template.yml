@@ -22,18 +22,18 @@ Resources:
         CatchAll:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /create_user
-            Method: GET
+            Path: /user
+            Method: POST
 
 Outputs:
   ESCreateUserAPI:
     Description: "API Gateway endpoint URL for Dev environment for ESCreateUser function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/"
 
-  ESCreateUserFunction:
+  ESCreateUser:
     Description: "ESCreateUser function ARN"
-    Value: !GetAtt ESCreateUserFunction.Arn
+    Value: !GetAtt ESCreateUser.Arn
 
-  ESCreateUserFunctionIamRole:
+  ESCreateUserIamRole:
     Description: "Implicit IAM Role created for ESCreateUser function"
     Value: !GetAtt ESCreateUserRole.Arn

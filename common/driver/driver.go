@@ -191,7 +191,6 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 	type LocationItem struct {
 		Location maps.LatLng `json:"location"`
 		Name     string      `json:"name"`
-		Icon     string      `json:"icon"`
 		Open     bool        `json:"open"`
 	}
 
@@ -233,7 +232,6 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 		item := LocationItem{
 			Location: i.Geometry.Location,
 			Name:     i.Name,
-			Icon:     i.Icon,
 			Open:     open,
 		}
 		locationItems = append(locationItems, item)
@@ -267,7 +265,6 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 		item := LocationItem{
 			Location: i.Geometry.Location,
 			Name:     i.Name,
-			Icon:     i.Icon,
 			Open:     open,
 		}
 		locationItems = append(locationItems, item)
@@ -280,3 +277,5 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 	}
 	return string(j), nil
 }
+
+// func CreateUser(location []float64, db *database.DynamoConn) (string, error) {}

@@ -155,6 +155,32 @@ Resources:
       FunctionName: !Ref ESServiceLocator
       Principal: apigateway.amazonaws.com
 
+  ESCreateUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESCreateUser
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /user
+            Method: post
+  ConfigLambdaPermissionUser:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESCreateUser
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESCreateUser
+      Principal: apigateway.amazonaws.com
+
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
