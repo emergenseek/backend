@@ -59,45 +59,42 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	switch req.Type {
 	case common.SEVERE:
 		// If the request type is SEVERE
-		// send an SMS message to all primary and secondary contacts with retry
+		// send an SMS message to all contacts with retry if their tier is 1
 		message, err := driver.CreateEmergencyMessage(common.SEVERE, user, mapsKey, req.Location)
 		if err != nil {
 			return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 		}
 
-		for _, contact := range user.PrimaryContacts {
-			retry.Do(
-				func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
-				retry.Attempts(3),
-			)
-		}
-
-		for _, contact := range user.SecondaryContacts {
-			retry.Do(
-				func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
-				retry.Attempts(3),
-			)
+		for _, contact := range user.Contacts {
+			if contact.Tier == common.FIRST {
+				retry.Do(
+					func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
+					retry.Attempts(3),
+				)
+			}
 		}
 
 	case common.MILD:
 		// If the request type is MILD
-		// send an SMS message only to primary contacts with retry
+		// send an SMS message to all contacts with retry if their tier is 1 or 2
 		message, err := driver.CreateEmergencyMessage(common.MILD, user, mapsKey, req.Location)
 		if err != nil {
 			return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 		}
 
-		for _, contact := range user.PrimaryContacts {
-			retry.Do(
-				func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
-				retry.Attempts(3),
-			)
+		for _, contact := range user.Contacts {
+			if contact.Tier == common.FIRST || contact.Tier == common.SECOND {
+				retry.Do(
+					func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
+					retry.Attempts(3),
+				)
+			}
 		}
 
 	case common.CHECKIN:
 		// If the request type is CHECKIN
-		// send an SMS message to all primary contacts using the message in the body
-		for _, contact := range user.PrimaryContacts {
+		// send an SMS message to all contacts using the message in the body
+		for _, contact := range user.Contacts {
 			retry.Do(
 				func() error { return twilio.SendSMS(contact.PhoneNumber, req.Message) },
 				retry.Attempts(3),

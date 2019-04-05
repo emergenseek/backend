@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/emergenseek/backend/common"
@@ -11,7 +12,7 @@ import (
 
 func TestHandler(t *testing.T) {
 	message := "Hello from Lambda"
-	successfulResponse := "{\"body\":\"Successfully sent SMS to contacts of user John Doe (e78e0c86-f9ba-4375-9554-6dc1426f5605)\"}"
+	successfulResponse := "{\"body\":\"Successfully sent SMS to contacts of user EmergenSeek User (4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9)\"}"
 	tests := []struct {
 		name              string
 		UserID            string
@@ -22,7 +23,7 @@ func TestHandler(t *testing.T) {
 	}{
 		{
 			"SEVERE Emergency Request",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			1,
 			"",
 			[]float64{40.7648, -73.9808},
@@ -30,7 +31,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"MILD Emergency Request",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			2,
 			"",
 			[]float64{40.7648, -73.9808},
@@ -38,7 +39,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"CHECKIN Emergency Request",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			3,
 			message,
 			[]float64{40.7648, -73.9808},
@@ -62,7 +63,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"Invalid EmergencyType",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			50,
 			"",
 			[]float64{40.7648, -73.9808},
@@ -70,7 +71,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"Missing Message w/ CHECKIN EmergencyType",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			3,
 			"",
 			[]float64{40.7648, -73.9808},
@@ -78,7 +79,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"Successful Request (MILD)",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			2,
 			"",
 			[]float64{40.7648, -73.9808},

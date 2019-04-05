@@ -14,7 +14,7 @@ type Request struct {
 	// The ID of the user making the request
 	UserID string `json:"user_id"`
 
-	// The message to send to primary contacts
+	// The message to send to contacts if Type is 3
 	Message string `json:"message"`
 
 	// The user's location at the time of the request

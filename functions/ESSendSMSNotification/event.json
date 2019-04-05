@@ -1,7 +1,6 @@
 {
-    "user_id": "e78e0c86-f9ba-4375-9554-6dc1426f5605",
+    "user_id": "4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
     "type": 1,
     "message": "Hello from Lambda, Simon",
-    "last_known_location": [22.2976851, 114.1675614]
-    
+    "last_known_location": [35.6795351, 139.7204474]
 }

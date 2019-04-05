@@ -10,7 +10,7 @@ import (
 )
 
 func TestHandler(t *testing.T) {
-	successfulResponse := "{\"body\":\"Successfully sent emergency call to emergency services and contacts of user John Doe (e78e0c86-f9ba-4375-9554-6dc1426f5605)\"}"
+	successfulResponse := "{\"body\":\"Successfully sent emergency call to emergency services and contacts of user EmergenSeek User (4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9)\"}"
 	tests := []struct {
 		name              string
 		UserID            string
