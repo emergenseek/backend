@@ -52,19 +52,12 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
 
-	// Generate the message to be sent to contacts
-	message, err := driver.CreatePollMessage(user, mapsKey, req.Location)
-	if err != nil {
-		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
-	}
-
-	for _, contact := range user.PrimaryContacts {
-		retry.Do(
-			func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
-			retry.Attempts(3),
-		)
-	}
-	for _, contact := range user.SecondaryContacts {
+	for _, contact := range user.Contacts {
+		// Generate message based on the contact's tier
+		message, err := driver.CreatePollMessage(user, mapsKey, req.Location, contact.Tier)
+		if err != nil {
+			return driver.ErrorResponse(http.StatusInternalServerError, err), nil
+		}
 		retry.Do(
 			func() error { return twilio.SendSMS(contact.PhoneNumber, message) },
 			retry.Attempts(3),

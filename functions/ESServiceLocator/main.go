@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -44,8 +43,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	if err != nil {
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
-	fmt.Println("?????????????????????????????????????")
-	fmt.Println(locations)
+
 	// Return successful response containing locations within a 10 mile radius
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,

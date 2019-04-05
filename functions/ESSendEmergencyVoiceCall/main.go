@@ -51,7 +51,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	err = db.UpdateLocation(user.UserID, req.Location)
 
 	// Convert the user's last known location to a human readable address
-	address, err := driver.GetAddress(req.Location, mapKey)
+	address, err := driver.GetAddress(req.Location, mapKey, false, 0)
 	if err != nil {
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}

@@ -7,8 +7,7 @@ type User struct {
 	LastName          string     `json:"last_name,omitempty"`
 	BloodType         string     `json:"blood_type,omitempty"`
 	Age               uint32     `json:"age,omitempty"`
-	PrimaryContacts   []*Contact `json:"primary_contacts,omitempty"`
-	SecondaryContacts []*Contact `json:"secondary_contacts,omitempty"`
+	Contacts          []*Contact `json:"contacts,omitempty"`
 	LastKnownLocation []float64  `json:"last_known_location,omitempty"`
 	PrimaryResidence  *Address   `json:"primary_residence,omitempty"`
 	PhonePin          uint64     `json:"phone_pin,omitempty"`

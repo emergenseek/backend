@@ -86,7 +86,7 @@ func CreateAll() (*database.DynamoConn, *notification.TwilioHandler, *session.Se
 // Should not used with the CHECKIN emergency type
 func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, mapsKey string, location []float64) (string, error) {
 	name := user.FormattedName()
-	address, err := GetAddress(location, mapsKey)
+	address, err := GetAddress(location, mapsKey, false, 0)
 	if err != nil {
 		return "", err
 	}
@@ -98,16 +98,25 @@ func CreateEmergencyMessage(emergency common.EmergencyType, user *models.User, m
 }
 
 // GetAddress is used to ReverseGeocode a latlng combination into a precise address
-func GetAddress(latlng []float64, key string) (string, error) {
+// If `useTier` is passed as true then address information will be filtered based
+// on the tier provided in `tier`.
+// AlertTier.FIRST will receive all data, this is equivalent to not providing checkTier
+// AlertTier.SECOND will not receive street information
+// AlrtTier.THIRD will only receive state, postalcode, and country code
+func GetAddress(latlng []float64, key string, useTier bool, tier common.AlertTier) (string, error) {
+	// Retrieve location from MapQuest Geocoding API
 	geocoder.SetAPIKey(key)
 	a, err := geocoder.ReverseGeocode(latlng[0], latlng[1])
 	if err != nil {
 		return "", err
 	}
+	// Filter data returned depending on provided AlertTier
+	var address string
+	if a.Street != "" && tier == common.FIRST {
+		address = fmt.Sprintf("%v, ", a.Street)
+	}
 
-	// Format address parts
-	address := fmt.Sprintf("%v, ", a.Street)
-	if a.City != "" {
+	if a.City != "" && (tier == common.FIRST || tier == common.SECOND) {
 		address = address + fmt.Sprintf("%v, ", a.City)
 	}
 	if a.State != "" {
@@ -119,6 +128,7 @@ func GetAddress(latlng []float64, key string) (string, error) {
 	if a.CountryCode != "" {
 		address = address + fmt.Sprintf("%v", a.CountryCode)
 	}
+
 	return address, nil
 }
 
@@ -171,9 +181,9 @@ func UploadTwilMLXML(twilML []byte, sess *session.Session) (string, error) {
 }
 
 // CreatePollMessage creates the
-func CreatePollMessage(user *models.User, mapsKey string, location []float64) (string, error) {
+func CreatePollMessage(user *models.User, mapsKey string, location []float64, tier common.AlertTier) (string, error) {
 	name := user.FormattedName()
-	address, err := GetAddress(location, mapsKey)
+	address, err := GetAddress(location, mapsKey, true, tier)
 	loc, _ := time.LoadLocation("UTC")
 	if err != nil {
 		return "", err
@@ -211,7 +221,7 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 			Lat: location[0],
 			Lng: location[1],
 		},
-		Radius:  uint(20), // 10 mile radius
+		Radius:  uint(20), // 20 mile radius
 		Keyword: "pharmacy",
 	}
 
@@ -246,7 +256,7 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 			Lat: location[0],
 			Lng: location[1],
 		},
-		Radius:  uint(20), // 10 mile radius
+		Radius:  uint(20),
 		Keyword: "hospital",
 	}
 
@@ -272,7 +282,6 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 		}
 		locationItems = append(locationItems, item)
 	}
-	fmt.Printf("%+v", locationItems)
 
 	j, err := json.Marshal(locationItems)
 	if err != nil {
