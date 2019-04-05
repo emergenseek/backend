@@ -3,12 +3,18 @@ package common
 // EmergencyType defines integer constants for the types of emergencies that the system expects
 type EmergencyType int
 
+// AccessTier defines integer constants for the types of access tiers available for contacts
+type AccessTier int
+
 const (
 	// UsersTableName defines the DynamoDB table used to store EmergenSeek users
 	UsersTableName = "EmergenSeekUsers"
 
-	// LambdaSecretsTable defines the DyamoDB table used to store environment variables
+	// LambdaSecretsTable defines the DynamoDB table used to store environment variables
 	LambdaSecretsTable = "LambdaSecrets"
+
+	// SettingsTableName defines the DynamoDB table used to store user settings
+	SettingsTableName = "EmergenSeekSettings"
 
 	// S3BucketName defines the name of the S3 bucket used by the application
 	S3BucketName = "emergenseek.com"
@@ -27,6 +33,15 @@ const (
 
 	// CHECKIN defines a priority 3 emergency (non-emergency)
 	CHECKIN EmergencyType = 3
+
+	// FIRST defines a first priority access tier
+	FIRST AccessTier = 1
+
+	// SECOND defines a second priority access tier
+	SECOND AccessTier = 2
+
+	// THIRD defines a third priority access tier
+	THIRD AccessTier = 3
 
 	// TwilioTrial defines the LambdaSecrets item ID of Twilio credentials for the trial account
 	TwilioTrial = "1"

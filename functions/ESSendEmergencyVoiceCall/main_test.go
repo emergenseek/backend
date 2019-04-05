@@ -19,7 +19,7 @@ func TestHandler(t *testing.T) {
 	}{
 		{
 			"Simple Request",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			[]float64{40.7648, -73.9808},
 			successfulResponse,
 		},
