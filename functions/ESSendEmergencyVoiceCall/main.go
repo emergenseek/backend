@@ -8,6 +8,7 @@ import (
 	retry "github.com/avast/retry-go"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/emergenseek/backend/common"
 	"github.com/emergenseek/backend/common/driver"
 )
 
@@ -67,17 +68,14 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
 
-	for _, contact := range user.PrimaryContacts {
-		retry.Do(
-			func() error { return twilio.SendVoiceCall(contact.PhoneNumber, callbackURL) },
-			retry.Attempts(3),
-		)
-	}
-	for _, contact := range user.SecondaryContacts {
-		retry.Do(
-			func() error { return twilio.SendVoiceCall(contact.PhoneNumber, callbackURL) },
-			retry.Attempts(3),
-		)
+	// Call all tier 1 contacts
+	for _, contact := range user.Contacts {
+		if contact.Tier == common.FIRST {
+			retry.Do(
+				func() error { return twilio.SendVoiceCall(contact.PhoneNumber, callbackURL) },
+				retry.Attempts(3),
+			)
+		}
 	}
 
 	bodyContent := fmt.Sprintf("Successfully sent emergency call to emergency services and contacts of user %v %v (%v)", user.FirstName, user.LastName, user.UserID)
