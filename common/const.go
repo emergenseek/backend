@@ -3,8 +3,8 @@ package common
 // EmergencyType defines integer constants for the types of emergencies that the system expects
 type EmergencyType int
 
-// AccessTier defines integer constants for the types of access tiers available for contacts
-type AccessTier int
+// AlertTier defines integer constants for the types of alert tiers available for contacts
+type AlertTier int
 
 const (
 	// UsersTableName defines the DynamoDB table used to store EmergenSeek users
@@ -34,14 +34,14 @@ const (
 	// CHECKIN defines a priority 3 emergency (non-emergency)
 	CHECKIN EmergencyType = 3
 
-	// FIRST defines a first priority access tier
-	FIRST AccessTier = 1
+	// FIRST defines a first priority alert tier
+	FIRST AlertTier = 1
 
-	// SECOND defines a second priority access tier
-	SECOND AccessTier = 2
+	// SECOND defines a second priority alert tier
+	SECOND AlertTier = 2
 
-	// THIRD defines a third priority access tier
-	THIRD AccessTier = 3
+	// THIRD defines a third priority alert tier
+	THIRD AlertTier = 3
 
 	// TwilioTrial defines the LambdaSecrets item ID of Twilio credentials for the trial account
 	TwilioTrial = "1"
