@@ -59,6 +59,12 @@ phases:
       - golint -set_exit_status
       - go tool vet .
 
+      
+      - cd "/go/src/handler/functions/ESManageSettings"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+
 
   build:
     commands:
@@ -105,6 +111,15 @@ phases:
       # Build our go application
       - go build -o main
       
+      # ==================================================
+      
+      # Run build ESManageSettings
+      # Change directory into ESManageSettings
+      - cd "/go/src/handler/functions/ESManageSettings"
+      
+      # Build our go application
+      - go build -o main
+
       # ==================================================
 
       # Go back to the root of the repository
