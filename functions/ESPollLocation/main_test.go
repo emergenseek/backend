@@ -2,14 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aws/aws-lambda-go/events"
 )
 
 func TestHandler(t *testing.T) {
-	successfulResponse := "{\"body\":\"Successfully sent poll message to contents of user John Doe (e78e0c86-f9ba-4375-9554-6dc1426f5605)\"}"
+	successfulResponse := "{\"body\":\"Successfully sent poll message to contents of user EmergenSeek User (4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9)\"}"
 	tests := []struct {
 		name              string
 		UserID            string
@@ -18,7 +19,7 @@ func TestHandler(t *testing.T) {
 	}{
 		{
 			"Simple Request",
-			"e78e0c86-f9ba-4375-9554-6dc1426f5605",
+			"4a35788a-e3fa-4eb4-b1c2-b9a3be8a58c9",
 			[]float64{-31.9517231, 115.8603252},
 			successfulResponse,
 		},
