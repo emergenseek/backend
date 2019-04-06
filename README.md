@@ -29,15 +29,17 @@ Note: AWS CLI tools may require you to have [Python](https://www.python.org/down
 
 ## Testing Locally 
 1. Install Docker (hub.docker.com account required)
+   - On Windows, if you do not have access to Hyper-V (i.e. Windows 10 Pro), install Docker Toolbox
 2. Install aws-sam-local using one of the methods listed at https://aws.amazon.com/serverless/sam/
 3. For convenience, install `make`
     - Windows: `choco install make`
 
 Every subdirectory within `/functions` will have:
   - A Makefile with a `sam` rule, this will invoke the test. Docker must be running. To run the rule, change into the function directy install make and invoke `make sam`
-  - A main.go file containing the source code for each Lambda function handler (called `Handler`)
-  - If the function accepts POST requests, an event.json file used for locally testing using cURL, wget, or HTTPie
-  - A template.yaml for the SAM CLI tool to provision resources
+  - A main.go file containing the source code for each Lambda function handler (`func Handler`)
+  - If the function accepts [non-idempotent](https://developer.mozilla.org/en-US/docs/Glossary/idempotent) HTTP methods, an event.json file used for locally testing using cURL, wget, or HTTPie. If the accepted method is anything other than POST, the JSON's filename will be prefixed with the request method.
+  - A template.yaml for the SAM CLI tool to provision resources, for local testing
+  - Optionally: a request.go file to encapsulate a Request struct, typcially used for validating the JSON request body
 
 Example invocation of `ESSendSMSNotification`
 ```bash
@@ -48,19 +50,25 @@ Successfully sent SMS to contacts of user: e78e0c86-f9ba-4375-9554-6dc1426f5605
 ## Lambda Function Breakdown
 Below is a table detailing the function and purpose of each of the Lambda functions contained within this repository. Function packages are prefixed with ES (EmergenSeek) followed by their operation/responsibility.
 
-|Function Name             |Purpose                               |
-|--------------------------|--------------------------------------|
-|`ESCreateUser`            |Create a new EmergenSeek user         |
-|`ESSendSMSNotification`   |Send SMS notifcation on S.O.S. trigger|
-|`ESSendEmergencyVoiceCall`|Send a voice call on S.O.S. trigger   |
-|...                       |...                                   |
+|Function Name             |Purpose                                                                                              |
+|--------------------------|-----------------------------------------------------------------------------------------------------|
+|`ESCreateUser`            |Create a new EmergenSeek user                                                                        |
+|`ESSendSMSNotification`   |Send SMS notifcations on S.O.S. trigger via Twilio                                                   |
+|`ESSendEmergencyVoiceCall`|Send voice calls on S.O.S. trigger via Twilio                                                        |
+|`ESManageSettings`        |Retrieve *and* update settings for an EmergenSeek user                                               |
+|`ESPollLocation`          |Send periodic location information to a user's contacts via Twilio                                   |
+|`ESManageUser`            |Retrieve *and* update settings for an EmergenSeek user                                               |
+|`ESServiceLocator`        |Retrieve hospitals and pharmacies near a user's location via the Google Places API                   |
+|`ESUpdateTier`            |Update the alert tier of a user's contacts                                                           |
+|`ESGetEmergencyInfo`      |Retrieve relevant emergency information (911 number for a given country, etc) given a user's location|
+|`ESAddContact`            |Associate additional contacts to a user 
 
 ## Project Structure
   - `/common`
     - Common helper functions and packages which are shared by the Lambda functions in `/functions`
   - `/functions`
     - Contains Lambda functions that are automatically built, tested, and deployed using AWS CodeBuild, CodeDeploy, and CodePipeline
-  - `/hooks`
+  - `/githooks`
     - [Git hooks](https://git-scm.com/docs/githooks) for ensuring `goreportcard` passes with a decent grade. Make sure to run `git config core.hooksPath githooks` to make sure Git can find these hooks. The default directory is `.git/hooks/`
 
 #### Helpful References

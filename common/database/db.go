@@ -4,6 +4,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -158,4 +159,87 @@ func (d *DynamoConn) MustGetGMapsKey() string {
 		panic(err)
 	}
 	return *result.Item["MAPS_API_KEY"].S
+}
+
+// GetSettings retrieves a user's settings from the Settings table
+func (d *DynamoConn) GetSettings(uid string) (*models.Settings, error) {
+	// Create user struct to be searched for using provided uid
+	userKey := &models.User{
+		UserID: uid,
+	}
+	key, err := dynamodbattribute.MarshalMap(userKey)
+	if err != nil {
+		return nil, err
+	}
+	input := &dynamodb.GetItemInput{
+		Key:       key,
+		TableName: aws.String(common.SettingsTableName),
+	}
+
+	// Search for settings object matching uid in table
+	result, err := d.Client.GetItem(input)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal user into struct
+	settings := &models.Settings{}
+	err = dynamodbattribute.UnmarshalMap(result.Item, &settings)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cheap check for item not found
+	if settings.UserID == "" {
+		return nil, errors.New("settings for user not found")
+	}
+	fmt.Println(settings)
+	return settings, nil
+}
+
+// UpdateSettings updates an existing user's settings
+func (d *DynamoConn) UpdateSettings(settings *models.Settings) error {
+	var SettingsUpdate struct {
+		SOSSMS            bool `json:":a"`
+		SOSCalls          bool `json:":b"`
+		SOSLockscreenInfo bool `json:":c"`
+		Updates           bool `json:":d"`
+		UpdateFrequency   int  `json:":e"`
+	}
+
+	// Marshal the update expression struct for DynamoDB
+	SettingsUpdate.SOSSMS = settings.SOSSMS
+	SettingsUpdate.SOSCalls = settings.SOSCalls
+	SettingsUpdate.SOSLockscreenInfo = settings.SOSLockscreenInfo
+	SettingsUpdate.Updates = settings.Updates
+	SettingsUpdate.UpdateFrequency = settings.UpdateFrequency
+
+	expr, err := dynamodbattribute.MarshalMap(SettingsUpdate)
+	if err != nil {
+		return err
+
+	}
+
+	// Define table schema's key
+	key := map[string]*dynamodb.AttributeValue{
+		"user_id": {
+			S: aws.String(settings.UserID),
+		},
+	}
+
+	// Use marshalled map for UpdateItemInput
+	item := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: expr,
+		TableName:                 aws.String(common.SettingsTableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		UpdateExpression:          aws.String("set sos_sms = :a, sos_calls = :b, sos_lockscreen = :c, updates = :d, update_frequency = :e"),
+	}
+
+	// Invoke the update
+	_, err = d.Client.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+	return nil
 }
