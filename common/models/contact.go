@@ -11,6 +11,5 @@ type Contact struct {
 	FirstName    string           `json:"first_name"`
 	LastName     string           `json:"last_name"`
 	EmailAddress string           `json:"email_address"`
-	HomeAddress  *Address         `json:"home_address"`
 	Tier         common.AlertTier `json:"tier"`
 }
