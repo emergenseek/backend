@@ -122,6 +122,15 @@ phases:
 
       # ==================================================
 
+      # Run build ESManageSettings
+      # Change directory into ESManageSettings
+      - cd "/go/src/handler/functions/ESAddContact"
+      
+      # Build our go application
+      - go build -o main
+
+      # ==================================================
+
       # Go back to the root of the repository
       - cd "/go/src/handler"
       

@@ -181,6 +181,32 @@ Resources:
       FunctionName: !Ref ESManageSettings
       Principal: apigateway.amazonaws.com
   
+  ESAddContact:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESAddContact
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /settings/{user_id+}
+            Method: post
+  ConfigLambdaPermissionContact:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESAddContact
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESAddContact
+      Principal: apigateway.amazonaws.com
+  
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
     Type: AWS::IAM::Role
