@@ -243,3 +243,47 @@ func (d *DynamoConn) UpdateSettings(settings *models.Settings) error {
 	}
 	return nil
 }
+
+// AddContact associates an additional contact to the given user
+func (d *DynamoConn) AddContact(userID string, contact *models.Contact) error {
+	var ContactsUpdate struct {
+		Contacts []*models.Contact `json:":c"`
+	}
+
+	// Retrieve user from database
+	user, err := d.GetUser(userID)
+	if err != nil {
+		return err
+	}
+	// Add the new contact to the slice and marshal the update
+	ContactsUpdate.Contacts = append(user.Contacts, contact)
+
+	expr, err := dynamodbattribute.MarshalMap(ContactsUpdate)
+	if err != nil {
+		return err
+
+	}
+
+	// Define table schema's key
+	key := map[string]*dynamodb.AttributeValue{
+		"user_id": {
+			S: aws.String(user.UserID),
+		},
+	}
+
+	// Use marshalled map for UpdateItemInput
+	item := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: expr,
+		TableName:                 aws.String(common.UsersTableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		UpdateExpression:          aws.String("set contacts = :c"),
+	}
+
+	// Invoke the update
+	_, err = d.Client.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+	return nil
+}
