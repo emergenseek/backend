@@ -1,0 +1,7 @@
+{
+    "sos_sms": false,
+    "sos_calls": false,
+    "sos_lockscreen": false,
+    "updates": false,
+    "update_frequency": 38
+}
