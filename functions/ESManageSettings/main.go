@@ -57,13 +57,13 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	switch request.HTTPMethod {
 	case "PATCH":
 		// Create a new request object and unmarshal the request body into it
-		var settings *models.Settings
-		err := json.Unmarshal([]byte(request.Body), settings)
+		var settings models.Settings
+		err := json.Unmarshal([]byte(request.Body), &settings)
 		if err != nil {
 			return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 		}
 		settings.UserID = request.PathParameters["user_id"]
-		return processPatch(db, settings)
+		return processPatch(db, &settings)
 	case "GET":
 		return processGet(db, request.PathParameters["user_id"])
 	}
