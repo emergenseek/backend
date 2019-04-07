@@ -2,6 +2,8 @@ package notification
 
 import (
 	"errors"
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
@@ -25,13 +27,21 @@ func (t *TwilioHandler) GetCredentials(db *database.DynamoConn) error {
 		return errors.New("db: please run DynamoConn.Init() first")
 	}
 
+	// Check if in CI to prevent waste of production credits
+	// IDs 1 and 2 are resevered for static Twilio credentials
+	// ID 2 is a non-trial account and should only be used in production
+	var index string
+	if os.Getenv("PARTITION") == "aws" {
+		index = common.TwilioTrial
+	} else {
+		index = common.TwilioProduction
+	}
+
 	result, err := db.Client.GetItem(&dynamodb.GetItemInput{
 		TableName: aws.String(common.LambdaSecretsTable),
 		Key: map[string]*dynamodb.AttributeValue{
 			"ID": {
-				// IDs 1 and 2 are resevered for static Twilio Credentials
-				// ID 2 is a non-trial account and should only be used in production
-				N: aws.String(common.TwilioProduction),
+				N: aws.String(index),
 			},
 		},
 	})
