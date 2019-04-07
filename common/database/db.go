@@ -287,3 +287,65 @@ func (d *DynamoConn) AddContact(userID string, contact *models.Contact) error {
 	}
 	return nil
 }
+
+// UpdateTier updates an existing contact's tier
+func (d *DynamoConn) UpdateTier(userID string, phoneNumber string, tier common.AlertTier) error {
+	var ContactsUpdate struct {
+		Contacts []*models.Contact `json:":c"`
+	}
+
+	// Retrieve user from database
+	user, err := d.GetUser(userID)
+	if err != nil {
+		return err
+	}
+
+	// Search for the contact matching the provided phone number
+	seen := false
+	for _, contact := range user.Contacts {
+		if contact.PhoneNumber == phoneNumber {
+			contact.Tier = tier
+			seen = true
+			break
+		}
+	}
+
+	// Hacky way to check if the contact was found
+	if !seen {
+		return fmt.Errorf("unable to find contact with phone number %v for user %v", phoneNumber, userID)
+	}
+
+	// Good enough until we figure out a way to update a single contact
+	ContactsUpdate.Contacts = user.Contacts
+
+	expr, err := dynamodbattribute.MarshalMap(ContactsUpdate)
+	if err != nil {
+		return err
+
+	}
+
+	// Define table schema's key
+	key := map[string]*dynamodb.AttributeValue{
+		"user_id": {
+			S: aws.String(user.UserID),
+		},
+	}
+
+	// Use marshalled map for UpdateItemInput
+	// TODO: update contacts to be map[string]Contact where
+	// the key is the phone number. This way we wont need to update the entire attribute
+	item := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: expr,
+		TableName:                 aws.String(common.UsersTableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		UpdateExpression:          aws.String("set contacts = :c"),
+	}
+
+	// Invoke the update
+	_, err = d.Client.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+	return nil
+}
