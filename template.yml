@@ -206,6 +206,32 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref ESAddContact
       Principal: apigateway.amazonaws.com
+
+  ESUpdateTier:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/ESUpdateTier
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        PostEvent:
+          Type: Api
+          Properties:
+            Path: /tier/{user_id+}
+            Method: put
+  ConfigLambdaPermissionTier:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESUpdateTier
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESUpdateTier
+      Principal: apigateway.amazonaws.com
   
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
