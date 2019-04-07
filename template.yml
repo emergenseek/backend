@@ -196,7 +196,7 @@ Resources:
         PostEvent:
           Type: Api
           Properties:
-            Path: /settings/{user_id+}
+            Path: /contact/{user_id+}
             Method: post
   ConfigLambdaPermissionContact:
     Type: AWS::Lambda::Permission
