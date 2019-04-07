@@ -75,3 +75,20 @@ func (emergency EmergencyType) String() string {
 	// Return at types index - 1 because the enum begins at 1 not 0
 	return types[emergency-1]
 }
+
+// String converts an AlertTier to its string name
+func (tier AlertTier) String() string {
+	// Map the tier type string to an index
+	types := [...]string{
+		"FIRST",
+		"SECOND",
+		"THIRD",
+	}
+
+	// Check if the integer is between 1 and 3 inclusive
+	if tier < FIRST || tier > THIRD {
+		return "Unknown"
+	}
+	// Return at types index - 1 because the enum begins at 1 not 0
+	return types[tier-1]
+}
