@@ -246,7 +246,7 @@ Resources:
           Properties:
             Path: /profile/{user_id+}
             Method: ANY
-    ConfigLambdaPermissionProfile:
+  ConfigLambdaPermissionProfile:
     Type: AWS::Lambda::Permission
     DependsOn:
       - ESManageProfile
