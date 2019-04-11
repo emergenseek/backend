@@ -232,6 +232,28 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref ESUpdateTier
       Principal: apigateway.amazonaws.com
+
+    ESManageProfile:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: functions/ESManageProfile
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /profile/{user_id+}
+            Method: ANY
+    ConfigLambdaPermissionSettings:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESManageProfile
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESManageProfile
+      Principal: apigateway.amazonaws.com
   
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
@@ -248,3 +270,4 @@ Resources:
       ManagedPolicyArns:
        - arn:aws:iam::aws:policy/AdministratorAccess # Bad practice to use AdministratorAccess
       PermissionsBoundary: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/CodeStar_${ProjectId}_PermissionsBoundary"
+

@@ -349,3 +349,55 @@ func (d *DynamoConn) UpdateTier(userID string, phoneNumber string, tier common.A
 	}
 	return nil
 }
+
+// UpdateProfile updates an existing user's profile
+func (d *DynamoConn) UpdateProfile(profile *models.User) error {
+	var ProfileUpdate struct {
+		FirstName        string          `json:":FirstName"`
+		LastName         string          `json:":LastName"`
+		BloodType        string          `json:":BloodType"`
+		Age              uint32          `json:":Age"`
+		PrimaryResidence *models.Address `json:":PrimaryResidence"`
+		PhonePin         uint64          `json:":PhonePin"`
+		EmailAddress     string          `json:":EmailAddress"`
+		PhoneNumber      string          `json:":PhoneNumber"`
+	}
+
+	// Marshal the update expression struct for DynamoDB
+	ProfileUpdate.FirstName = profile.FirstName
+	ProfileUpdate.LastName = profile.LastName
+	ProfileUpdate.BloodType = profile.BloodType
+	ProfileUpdate.Age = profile.Age
+	ProfileUpdate.PrimaryResidence = profile.PrimaryResidence
+	ProfileUpdate.PhonePin = profile.PhonePin
+	ProfileUpdate.EmailAddress = profile.EmailAddress
+	ProfileUpdate.PhoneNumber = profile.PhoneNumber
+
+	expr, err := dynamodbattribute.MarshalMap(ProfileUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Define table schema's key
+	key := map[string]*dynamodb.AttributeValue{
+		"user_id": {
+			S: aws.String(profile.UserID),
+		},
+	}
+
+	// Use marshalled map for UpdateItemInput
+	item := &dynamodb.UpdateItemInput{
+		ExpressionAttributeValues: expr,
+		TableName:                 aws.String(common.UsersTableName),
+		Key:                       key,
+		ReturnValues:              aws.String("UPDATED_NEW"),
+		UpdateExpression:          aws.String("set first_name = :FirstName, last_name = :LastName, blood_type = :BloodType, age = :Age, primary_residence = :PrimaryResidence, phone_pin = :PhonePin, email_address = :EmailAddress, phone_number = :PhoneNumber"),
+	}
+
+	// Invoke the update
+	_, err = d.Client.UpdateItem(item)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -1,0 +1,17 @@
+{
+	"first_name": "suhas",
+	"last_name": "bacchu",
+	"blood_type": "O+",
+	"age": 21,
+	"primary_residence": {
+        "city": "Lubbock",
+        "country": "United States of America",
+        "line1": "3138 4th St",
+        "line2": "Apt 101",
+        "state": "Texas",
+        "zip_code": "79415"
+    },
+	"phone_pin": 9876,
+	"email_address": "suhas.bacchu@ttu.edu",
+	"phone_number": "+18326720272"
+}

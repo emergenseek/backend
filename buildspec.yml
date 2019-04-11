@@ -70,6 +70,10 @@ phases:
       - golint -set_exit_status
       - go tool vet .
 
+      - cd "/go/src/handler/functions/ESManageProfile"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
 
   build:
     commands:
@@ -139,6 +143,15 @@ phases:
       # Run build ESUpdateTier
       # Change directory into ESUpdateTier
       - cd "/go/src/handler/functions/ESUpdateTier"
+      
+      # Build our go application
+      - go build -o main
+
+      # ==================================================
+
+      # Run build ESManageProfile
+      # Change directory into ESManageProfile
+      - cd "/go/src/handler/functions/ESManageProfile"
       
       # Build our go application
       - go build -o main
