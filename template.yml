@@ -233,7 +233,7 @@ Resources:
       FunctionName: !Ref ESUpdateTier
       Principal: apigateway.amazonaws.com
 
-    ESManageProfile:
+  ESManageProfile:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: functions/ESManageProfile
