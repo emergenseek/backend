@@ -240,6 +240,10 @@ Resources:
       Handler: main
       Runtime: go1.x
       Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
       Events:
         CatchAll:
           Type: Api
