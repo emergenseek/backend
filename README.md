@@ -60,8 +60,8 @@ Below is a table detailing the function and purpose of each of the Lambda functi
 |`ESManageUser`            |Retrieve *and* update settings for an EmergenSeek user                                               |
 |`ESServiceLocator`        |Retrieve hospitals and pharmacies near a user's location via the Google Places API                   |
 |`ESUpdateTier`            |Update the alert tier of a user's contacts                                                           |
-|`ESGetEmergencyInfo`      |Retrieve relevant emergency information (911 number for a given country, etc) given a user's location|
-|`ESAddContact`            |Associate additional contacts to a user 
+|`ESGetEmergencyNumbers`   |Retrieve emergency phone numbers (i.e. 911 number for a given country, etc), given a user's location |
+|`ESAddContact`            |Associate additional contacts to a user                                                              |
 
 ## Project Structure
   - `/common`

@@ -401,3 +401,37 @@ func (d *DynamoConn) UpdateProfile(profile *models.User) error {
 	}
 	return nil
 }
+
+// GetEmergencyNumbers retrieves police, fire, and ambulance numbers, given a country code
+func (d *DynamoConn) GetEmergencyNumbers(countryCode string) (*models.EmergencyInfo, error) {
+	tableKey := struct {
+		CountryCode string `json:"country_code"`
+	}{
+		countryCode,
+	}
+
+	// Create search key and Get request input
+	key, err := dynamodbattribute.MarshalMap(tableKey)
+	if err != nil {
+		return nil, err
+	}
+	input := &dynamodb.GetItemInput{
+		Key:       key,
+		TableName: aws.String(common.EmergencyNumsTableName),
+	}
+
+	// Search for item matching countyr code in table
+	result, err := d.Client.GetItem(input)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal information into struct
+	data := &models.EmergencyInfo{}
+	err = dynamodbattribute.UnmarshalMap(result.Item, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
