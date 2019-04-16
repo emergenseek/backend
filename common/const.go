@@ -16,6 +16,9 @@ const (
 	// SettingsTableName defines the DynamoDB table used to store user settings
 	SettingsTableName = "EmergenSeekSettings"
 
+	// EmergencyNumsTableName defines the DynamoDB table used to global emergency phone numbers
+	EmergencyNumsTableName = "EmergencyNumbers"
+
 	// S3BucketName defines the name of the S3 bucket used by the application
 	S3BucketName = "emergenseek.com"
 

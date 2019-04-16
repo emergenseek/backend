@@ -289,3 +289,21 @@ func GetEmergencyServices(location []float64, db *database.DynamoConn) (string, 
 	}
 	return string(j), nil
 }
+
+// GetCountryCode retrives a country code associated with a latitude and longitude
+// for the ESGetEmergencyInfo Lambda function
+func GetCountryCode(latlng []float64, key string) (string, error) {
+	geocoder.SetAPIKey(key)
+	a, err := geocoder.ReverseGeocode(latlng[0], latlng[1])
+	if err != nil {
+		return "", err
+	}
+
+	countryCode := a.CountryCode
+	if countryCode == "" {
+		return "", fmt.Errorf("Unable to find country for location: [%v, %v]", latlng[0], latlng[1])
+	}
+
+	return countryCode, nil
+
+}
