@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ESESGetEmergencyInfo
+  
+  SAM template for locally testing ESESGetEmergencyInfo
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  ESESGetEmergencyInfo:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: main.zip
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events:
+        CatchAll:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /number/{latitude+}/{longitude+}
+            Method: GET
+
+Outputs:
+  ESESGetEmergencyInfoAPI:
+    Description: "API Gateway endpoint URL for Dev environment for ESESGetEmergencyInfo function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/"
+
+  ESESGetEmergencyInfoFunction:
+    Description: "ESESGetEmergencyInfo function ARN"
+    Value: !GetAtt ESESGetEmergencyInfoFunction.Arn
+
+  ESESGetEmergencyInfoFunctionIamRole:
+    Description: "Implicit IAM Role created for ESESGetEmergencyInfo function"
+    Value: !GetAtt ESESGetEmergencyInfoRole.Arn
