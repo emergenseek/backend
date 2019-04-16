@@ -79,3 +79,6 @@ Below is a table detailing the function and purpose of each of the Lambda functi
  - https://blog.rowanudell.com/aws-sam-local-error-with-golang/
  - https://github.com/awslabs/aws-sam-cli/issues/437
  - https://medium.com/a-man-with-no-server/running-go-aws-lambdas-locally-with-sls-framework-and-sam-af3d648d49cb
+
+#### Acknowledgements 
+ - Data source for ESGetEmergencyNumbers: https://github.com/Alex0x47/EmergencyNumbers
