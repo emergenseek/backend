@@ -402,8 +402,8 @@ func (d *DynamoConn) UpdateProfile(profile *models.User) error {
 	return nil
 }
 
-// GetEmergencyInfo retrieves police, fire, and ambulance numbers, given a country code
-func (d *DynamoConn) GetEmergencyInfo(countryCode string) (*models.EmergencyInfo, error) {
+// GetEmergencyNumbers retrieves police, fire, and ambulance numbers, given a country code
+func (d *DynamoConn) GetEmergencyNumbers(countryCode string) (*models.EmergencyInfo, error) {
 	tableKey := struct {
 		CountryCode string `json:"country_code"`
 	}{
