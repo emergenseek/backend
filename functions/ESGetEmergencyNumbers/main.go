@@ -27,13 +27,13 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	// Find the matching country code
-	countryCode, err := driver.GetCountryCode([]float64{lat, lng}, mapsKey)
-	if err != nil {
+	countryCode, cerr := driver.GetCountryCode([]float64{lat, lng}, mapsKey)
+	if cerr != nil {
 		return driver.ErrorResponse(http.StatusBadRequest, err), nil
 	}
 
 	// Retrieve data from database
-	result, err := db.GetEmergencyInfo(countryCode)
+	result, err := db.GetEmergencyNumbers(countryCode)
 	if err != nil {
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}

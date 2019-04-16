@@ -75,6 +75,11 @@ phases:
       - golint -set_exit_status
       - go tool vet .
 
+      - cd "/go/src/handler/functions/ESGetEmergencyNumbers"
+      - go get ./...
+      - golint -set_exit_status
+      - go tool vet .
+
   build:
     commands:
       # Run build ESSendSMSNotification
@@ -158,6 +163,15 @@ phases:
 
       # ==================================================
 
+      # Run build ESGetEmergencyNumbers
+      # Change directory into ESGetEmergencyNumbers
+      - cd "/go/src/handler/functions/ESGetEmergencyNumbers"
+      
+      # Build our go application
+      - go build -o main
+
+      # ==================================================
+      
       # Go back to the root of the repository
       - cd "/go/src/handler"
       

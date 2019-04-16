@@ -258,6 +258,32 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref ESManageProfile
       Principal: apigateway.amazonaws.com
+
+  ESGetEmergencyNumbers:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: functions/ESGetEmergencyNumbers
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /number/{latitude}/{longitude+}
+            Method: GET
+  ConfigLambdaPermissionNumbers:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESGetEmergencyNumbers
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESManageProfile
+      Principal: apigateway.amazonaws.com
   
   LambdaExecutionRole:
     Description: Creating service role in IAM for AWS Lambda
