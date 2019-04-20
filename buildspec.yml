@@ -163,6 +163,15 @@ phases:
 
       # ==================================================
 
+      # Run build ESCreateUser
+      # Change directory into ESManageProfile
+      - cd "/go/src/handler/functions/ESCreateUser"
+      
+      # Build our go application
+      - go build -o main
+
+      # ==================================================
+
       # Run build ESGetEmergencyNumbers
       # Change directory into ESGetEmergencyNumbers
       - cd "/go/src/handler/functions/ESGetEmergencyNumbers"
