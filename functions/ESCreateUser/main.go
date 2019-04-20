@@ -1,53 +1,35 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/emergenseek/backend/common/driver"
 	"github.com/emergenseek/backend/common/models"
 )
 
-//CreateUserDB to create user data, then READ
-func CreateUserDB() {
+// Handler is the Lambda handler for ESCreateUser
+func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	config := &aws.Config{Region: aws.String("us-east-2")}
-
-	sess := session.Must(session.NewSession(config))
-
-	svc := dynamodb.New(sess)
-
-	user := models.User{
-		FirstName: "Anni",
-		LastName:  "Xcmneo",
-		BloodType: "Rh+",
-		Age:       1230,
-		/*
-			PrimaryContacts:
-			SecondaryContacts:
-			LastKnownLocation:
-			PrimaryResidence:
-		*/
-		PhonePin:     12345,
-		CognitoID:    "cognido_id",
-		EmailAddress: "cognido_id@hotmail.com",
-	}
-
-	av, err := dynamodbattribute.MarshalMap(user)
-
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String("EmergenSeekUsers"),
-	}
-	_, err = svc.PutItem(input)
+	// Create a new request object and unmarshal the request body into it
+	var profile models.User
+	err := json.Unmarshal([]byte(request.Body), &profile)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
+
+	// Initialize drivers
+	db, _, _, _ := driver.CreateAll()
+
+	_, err = db.CreateUser(&profile)
+
+	return driver.SuccessfulResponse(fmt.Sprintf("Successfully created user for user %v", profile.UserID)), nil
+
 }
 
 func main() {
-	CreateUserDB()
+	lambda.Start(Handler)
 }

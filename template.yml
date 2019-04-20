@@ -232,6 +232,32 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref ESUpdateTier
       Principal: apigateway.amazonaws.com
+  
+    ESCreateUser:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: functions/ESCreateUser
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Fn::GetAtt:
+          - LambdaExecutionRole
+          - Arn
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /create
+            Method: PUT
+  ConfigLambdaPermissionProfile:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - ESCreateUser
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ESCreateUser
+      Principal: apigateway.amazonaws.com
 
   ESManageProfile:
     Type: AWS::Serverless::Function 

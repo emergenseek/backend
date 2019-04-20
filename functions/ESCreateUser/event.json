@@ -1,3 +1,18 @@
 {
-    "CognitoID": "cognito_ID"
+    "user_id": "uYNdyWQsJsSu8Bf37pB7gNOLzKx1",
+	"first_name": "derek",
+	"last_name": "fritz",
+	"blood_type": "O-",
+	"age": 21,
+	"primary_residence": {
+        "city": "Lubbock",
+        "country": "United States of America",
+        "line1": "1234 18th St",
+        "line2": "Apt 1010",
+        "state": "Texas",
+        "zip_code": "79416"
+    },
+	"phone_pin": 3214,
+	"email_address": "derek.fritz@ttu.edu",
+	"phone_number": "+18061234567"
 }

@@ -8,3 +8,6 @@ sam:
 
 	# Test
 	sam local start-api
+
+test:
+	curl -i -X PUT http://127.0.0.1:3000/create -d @event.json --header "Content-Type: application/json"
