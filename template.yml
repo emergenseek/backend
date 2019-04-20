@@ -233,7 +233,7 @@ Resources:
       FunctionName: !Ref ESUpdateTier
       Principal: apigateway.amazonaws.com
   
-    ESCreateUser:
+  ESCreateUser:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: functions/ESCreateUser
@@ -250,7 +250,7 @@ Resources:
           Properties:
             Path: /create
             Method: PUT
-  ConfigLambdaPermissionProfile:
+  ConfigLambdaPermissionCreate:
     Type: AWS::Lambda::Permission
     DependsOn:
       - ESCreateUser
