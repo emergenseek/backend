@@ -21,6 +21,8 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return driver.ErrorResponse(http.StatusInternalServerError, err), nil
 	}
 
+	profile.Contacts = []*models.Contact{}
+
 	// Initialize drivers
 	db, _, _, _ := driver.CreateAll()
 
