@@ -55,13 +55,14 @@ Below is a table detailing the function and purpose of each of the Lambda functi
 |`ESCreateUser`            |Create a new EmergenSeek user                                                                        |
 |`ESSendSMSNotification`   |Send SMS notifcations on S.O.S. trigger via Twilio                                                   |
 |`ESSendEmergencyVoiceCall`|Send voice calls on S.O.S. trigger via Twilio                                                        |
-|`ESManageSettings`        |Retrieve *and* update settings for an EmergenSeek user                                               |
+|`ESManageProfile`         |Retrieve *and* update settings for an EmergenSeek user                                               |
 |`ESPollLocation`          |Send periodic location information to a user's contacts via Twilio                                   |
-|`ESManageUser`            |Retrieve *and* update settings for an EmergenSeek user                                               |
+|`ESManageSettings`        |Retrieve *and* update settings for an EmergenSeek user                                               |
 |`ESServiceLocator`        |Retrieve hospitals and pharmacies near a user's location via the Google Places API                   |
 |`ESUpdateTier`            |Update the alert tier of a user's contacts                                                           |
 |`ESGetEmergencyNumbers`   |Retrieve emergency phone numbers (i.e. 911 number for a given country, etc), given a user's location |
 |`ESAddContact`            |Associate additional contacts to a user                                                              |
+|`ESGetLockScreenInfo`     |Retrieve information necessary for first responders                                                  |
 
 ## Project Structure
   - `/common`
