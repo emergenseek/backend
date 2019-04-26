@@ -8,7 +8,7 @@ sam:
 
 	# Test
 	# sam local start-api 
-	sam local invoke --no-event
+	sam local invoke
 
 test:
 	curl -i -X POST http://127.0.0.1:3000/loop -d @event.json --header "Content-Type: application/json"

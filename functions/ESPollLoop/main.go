@@ -22,10 +22,12 @@ type Request struct {
 	Tier common.AlertTier `json:"tier"`
 }
 
-func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, error) {
+func verifyRequest(request events.CloudWatchEvent) (*Request, int, error) {
 	// Create a new request object and unmarshal the request body into it
 	req := new(Request)
-	err := json.Unmarshal([]byte(request.Body), req)
+	// j, _ := json.Marshal(request.Detail)
+	fmt.Printf(request.AccountID + "HELLO!")
+	err := json.Unmarshal(request.Detail, req)
 	if err != nil {
 		return nil, http.StatusUnprocessableEntity, err
 	}
@@ -35,7 +37,7 @@ func verifyRequest(request events.APIGatewayProxyRequest) (*Request, int, error)
 }
 
 // Handler is the Lambda handler for ESPollLoop
-func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(request events.CloudWatchEvent) (events.APIGatewayProxyResponse, error) {
 	// Verify the request
 	req, status, err := verifyRequest(request)
 	if err != nil {
